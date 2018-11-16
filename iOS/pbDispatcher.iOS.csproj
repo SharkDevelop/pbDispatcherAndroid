@@ -192,6 +192,10 @@
     <Compile Include="SensorSettingsController.designer.cs">
       <DependentUpon>SensorSettingsController.cs</DependentUpon>
     </Compile>
+    <Compile Include="Client.cs" />
+    <Compile Include="DataManager.cs" />
+    <Compile Include="DataUtils.cs" />
+    <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="iTunesArtwork" />
@@ -230,9 +234,6 @@
     </BundleResource>
     <BundleResource Include="..\..\DataUtils\DataUtils\Resources\Waterdrop.png">
       <Link>Resources\Waterdrop.png</Link>
-    </BundleResource>
-    <BundleResource Include="..\..\DataUtils\DataUtils\Resources\Zzz.png">
-      <Link>Resources\Zzz.png</Link>
     </BundleResource>
     <BundleResource Include="..\..\DataUtils\DataUtils\Resources\Icons\GearIcon.png">
       <Link>Resources\Icons\GearIcon.png</Link>
@@ -331,6 +332,5 @@
       <Link>Resources\AlertGear.png</Link>
     </BundleResource>
   </ItemGroup>
-  <Import Project="..\..\DataUtils\DataUtils\DataUtils.projitems" Label="Shared" Condition="Exists('..\..\DataUtils\DataUtils\DataUtils.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
