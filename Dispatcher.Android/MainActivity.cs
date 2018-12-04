@@ -9,6 +9,7 @@ using Android.Preferences;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
+using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 using DataUtils;
@@ -25,14 +26,20 @@ namespace Dispatcher.Android
 
         private Timer timer;
 
-        private ListView list;        
+        RecyclerView mRecyclerView;
+        RecyclerView.LayoutManager mLayoutManager;
+        MachinesAdapter mAdapter;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             DataUtils.Init();
 
             base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.activity_main);            
+            SetContentView(Resource.Layout.activity_main);
+
+            //var toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
+            //SetActionBar(toolbar);
+            //ActionBar.Title = "My Toolbar";
 
             var button = FindViewById<Button>(Resource.Id.button1);
 
@@ -44,8 +51,15 @@ namespace Dispatcher.Android
                 StartActivity(intent);
             };
 
-            list = FindViewById<ListView>(Resource.Id.listView1);            
+            mRecyclerView = FindViewById<RecyclerView>(Resource.Id.recyclerView);
 
+            // Plug in the linear layout manager:
+            mLayoutManager = new LinearLayoutManager(this);
+            mRecyclerView.SetLayoutManager(mLayoutManager);
+
+            mAdapter = new MachinesAdapter(DataManager.machines);
+            mRecyclerView.SetAdapter(mAdapter);
+            
             // MachineTable.Source = new MachinesTableSource(this);
             //MachineTable.Delegate = new 
             UpdateViewValues();
@@ -145,20 +159,22 @@ namespace Dispatcher.Android
             var machines = DataManager.machines;
 
             if (machines.Count <= 0) return;
+            // this.Assets
 
-            var names = new List<string>();
+            mAdapter.NotifyDataSetChanged();
+            //var names = new List<string>();
 
-            foreach (var machine in machines)
-            {
-                if (string.IsNullOrEmpty(machine.name) || machine.name == "null")
-                    names.Add(machine.type.name);
-                else
-                {
-                    names.Add(machine.name);
-                }
-            }
-          
-            list.Adapter = new ArrayAdapter<string>(this, Resource.Layout.list_item, names);
+            //foreach (var machine in machines)
+            //{
+            //    if (string.IsNullOrEmpty(machine.name) || machine.name == "null")
+            //        names.Add(machine.type.name);
+            //    else
+            //    {
+            //        names.Add(machine.name);
+            //    }
+            //}
+
+            //list.Adapter = new ArrayAdapter<string>(this, Resource.Layout.list_item, names);
         }
     }
 }

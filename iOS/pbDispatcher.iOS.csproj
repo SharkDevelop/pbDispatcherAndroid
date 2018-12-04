@@ -30,7 +30,8 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
-    <DebugType></DebugType>
+    <DebugType>
+    </DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -45,7 +46,7 @@
     <PlatformTarget>anycpu</PlatformTarget>
     <MtouchI18n>other,west</MtouchI18n>
     <CodesignProvision>pbDispatcher-Distr</CodesignProvision>
-<AssemblyName>pbDispatcher.iOS</AssemblyName>
+    <AssemblyName>pbDispatcher.iOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>pdbonly</DebugType>
@@ -82,7 +83,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <MtouchI18n>other,west</MtouchI18n>
     <CodesignProvision>pbDispatcher-Dev</CodesignProvision>
-<AssemblyName>pbDispatcher.iOS</AssemblyName>
+    <AssemblyName>pbDispatcher.iOS</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -93,33 +94,87 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
-    <ImageAsset Include="Assets.xcassets\Contents.json" />
-    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\Contents.json" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home57.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home114.png" />
-    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 1242x2208.png" />
-    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 750x1334.png" />
-    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 640x960.png" />
-    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 640x1136.png" />
-    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 1536x2048.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home50.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home100.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home72.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home144.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon40.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon60.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon58.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon87.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon80.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon120.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon180.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon20.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon29.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon76.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon152.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon167.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon1024.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\Contents.json">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\Contents.json">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home57.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home114.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 1242x2208.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 750x1334.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 640x960.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 640x1136.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\HomeIcon 1536x2048.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home50.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home100.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home72.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\home144.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon40.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon60.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon58.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon87.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon80.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon120.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon180.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon20.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon29.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon76.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon152.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon167.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\GearIcon1024.png">
+      <Visible>false</Visible>
+    </ImageAsset>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />
