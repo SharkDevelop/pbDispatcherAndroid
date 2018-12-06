@@ -64,10 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataUtils.cs" />
-    <Compile Include="Data\Client.cs" />
-    <Compile Include="Data\DataManager.cs" />
-    <Compile Include="Data\DataUtils.cs" />
-    <Compile Include="Data\Settings.cs" />
     <Compile Include="MachinesAdapter.cs" />
     <Compile Include="MachineViewHolder.cs" />
     <Compile Include="MainActivity.cs" />
@@ -79,7 +75,6 @@
     <Compile Include="Utils\MinMaxInputFilter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\Icons.zip" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
@@ -129,54 +124,6 @@
     <AndroidResource Include="Resources\layout\MachineCardView.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\menu\bottom_navigation.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon1024.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon120.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon152.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon167.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon180.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon20.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon29.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon40.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon58.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon60.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon76.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon80.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIcon87.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Icons\GearIconAlfa.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\Alarm.png" />
@@ -259,6 +206,55 @@
   <ItemGroup>
     <AndroidAsset Include="Assets\YelowCircle.png" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon1024.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon120.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon152.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon167.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon180.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon20.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon40.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon58.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon60.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon76.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon80.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIcon87.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Icons\GearIconAlfa.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\menu\toolbar_menu.xml" />
+  </ItemGroup>
+  <Import Project="..\DataUtils\DataUtils.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.

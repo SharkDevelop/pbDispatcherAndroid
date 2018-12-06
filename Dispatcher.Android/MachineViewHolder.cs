@@ -8,16 +8,13 @@ namespace Dispatcher.Android
     public class MachineViewHolder : RecyclerView.ViewHolder
     {
         public ImageView Image { get; private set; }
-        public TextView Title { get; private set; }
-        public TextView Description { get; private set; }
 
         public ImageView SensorIconCell { get; set; }
 
-        //public string SensorIcon
-        //{
-        //    get { return SensorIconCell.Image.ToString(); }
-        //    set { SensorIconCell.Image = FromFile(value); }
-        //}
+        public ImageView MachineStateIcon { get; set; }
+
+        public TextView Title { get; private set; }
+        public TextView Description { get; private set; }
 
         public TextView MainValueCell { get; set; }
         public TextView MainValueSymbolCell { get; set; }
@@ -59,6 +56,9 @@ namespace Dispatcher.Android
         {
             // Locate and cache view references:
             Image = itemView.FindViewById<ImageView>(Resource.Id.imageView);
+            SensorIconCell = itemView.FindViewById<ImageView>(Resource.Id.sensorImageView);
+            MachineStateIcon = itemView.FindViewById<ImageView>(Resource.Id.stateImageView);
+
             Title = itemView.FindViewById<TextView>(Resource.Id.nameTextView);
             Description = itemView.FindViewById<TextView>(Resource.Id.descTextView);
             MainValueCell = itemView.FindViewById<TextView>(Resource.Id.mainValueTextView);

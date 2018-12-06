@@ -37,19 +37,15 @@ namespace Dispatcher.Android
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
-            //var toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
-            //SetActionBar(toolbar);
-            //ActionBar.Title = "My Toolbar";
+            //var button = FindViewById<Button>(Resource.Id.button1);
 
-            var button = FindViewById<Button>(Resource.Id.button1);
-
-            button.Click += (sender, args) =>
-            {
-                Intent intent = new Intent();
-                intent.SetClass(BaseContext, typeof(UserSettingsActivity));
-                intent.SetFlags(ActivityFlags.ReorderToFront);
-                StartActivity(intent);
-            };
+            //button.Click += (sender, args) =>
+            //{
+            //    Intent intent = new Intent();
+            //    intent.SetClass(BaseContext, typeof(UserSettingsActivity));
+            //    intent.SetFlags(ActivityFlags.ReorderToFront);
+            //    StartActivity(intent);
+            //};
 
             mRecyclerView = FindViewById<RecyclerView>(Resource.Id.recyclerView);
 
@@ -63,6 +59,28 @@ namespace Dispatcher.Android
             // MachineTable.Source = new MachinesTableSource(this);
             //MachineTable.Delegate = new 
             UpdateViewValues();
+        }
+
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            var inflater = MenuInflater;
+            inflater.Inflate(Resource.Menu.toolbar_menu, menu);
+            return true;
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            int id = item.ItemId;
+            if (id == Resource.Id.action_settings)
+            {
+                Intent intent = new Intent();
+                intent.SetClass(BaseContext, typeof(UserSettingsActivity));
+                intent.SetFlags(ActivityFlags.ReorderToFront);
+                StartActivity(intent);
+                return true;
+            }
+
+            return base.OnOptionsItemSelected(item);
         }
 
         protected override void OnStart()
@@ -81,7 +99,7 @@ namespace Dispatcher.Android
                 return;
             }
 
-            timer = new Timer { AutoReset = true, Interval = 200f };
+            timer = new Timer { AutoReset = true, Interval = 1000f };
             timer.Elapsed += delegate { CheckNewData(); };
             timer.Start();
 
@@ -101,7 +119,7 @@ namespace Dispatcher.Android
                // this.Title = "Все";
                 if (DataManager.selectedDivision != null)
                 {
-                    // Title = DataManager.selectedDivision.name;
+               //     Title = DataManager.selectedDivision.name;
                   
                     //Window.SetTitle(DataManager.selectedDivision.name);
                 }
@@ -115,12 +133,12 @@ namespace Dispatcher.Android
             }
             else if (DataManager.ConnectState == ConnectStates.SocketConnected)
             {
-             //   this.Title = "Нет авторизации";
+              // this.Title = "Нет авторизации";
                 //  pingImageView.Image = UIImage.FromFile("GreyCircle.png");
             }
             else
             {
-             //   this.Title = "Нет связи";
+               // this.Title = "Нет связи";
                 //  pingImageView.Image = UIImage.FromFile("GreyCircle.png");
             }
 
@@ -150,8 +168,6 @@ namespace Dispatcher.Android
         {
             //if (requestState == RequestStates.Completed)
             needDataUpdate++;
-
-           // this.RunOnUiThread(FillList);
         }
 
         private void FillList()
@@ -159,22 +175,8 @@ namespace Dispatcher.Android
             var machines = DataManager.machines;
 
             if (machines.Count <= 0) return;
-            // this.Assets
 
             mAdapter.NotifyDataSetChanged();
-            //var names = new List<string>();
-
-            //foreach (var machine in machines)
-            //{
-            //    if (string.IsNullOrEmpty(machine.name) || machine.name == "null")
-            //        names.Add(machine.type.name);
-            //    else
-            //    {
-            //        names.Add(machine.name);
-            //    }
-            //}
-
-            //list.Adapter = new ArrayAdapter<string>(this, Resource.Layout.list_item, names);
         }
     }
 }

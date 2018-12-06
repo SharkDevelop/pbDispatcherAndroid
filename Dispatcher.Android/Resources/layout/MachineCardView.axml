@@ -14,11 +14,18 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="5dp">
-            <ImageView
-                android:layout_width="32px"
-                android:layout_height="32px"				
-                android:id="@+id/imageView"
-                android:scaleType="centerCrop" />
+			<ImageView
+				android:layout_width="40dp"
+				android:layout_height="40dp"				
+				android:adjustViewBounds="true"				
+				android:id="@+id/imageView"						 />
+			<ImageView
+				android:layout_width="20dp"
+				android:layout_height="20dp"				
+				android:layout_marginTop="20dp"
+				android:layout_marginLeft="-20dp"
+				android:layout_toRightOf="@+id/imageView"	
+				android:id="@+id/sensorImageView"						 />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -27,6 +34,7 @@
 				android:textSize="16dp"
                 android:text="Caption"
                 android:id="@+id/nameTextView"
+				android:layout_toRightOf="@+id/imageView"				
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="4dp" />
 			<TextView
@@ -37,9 +45,17 @@
 				android:textSize="12dp"
                 android:text="Description"
                 android:id="@+id/descTextView"
+				android:layout_toRightOf="@+id/imageView"	
 				android:layout_below="@+id/nameTextView"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="4dp" />
+
+			<ImageView
+				android:layout_width="20dp"
+				android:layout_height="20dp"					
+				android:layout_marginRight="10dp"
+				android:layout_toLeftOf="@+id/mainValueTextView"	
+				android:id="@+id/stateImageView"						 />
 
 			<TextView
                 android:layout_width="wrap_content"

@@ -6,7 +6,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbDispatcher.iOS", "iOS\pbD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dispatcher.Android", "Dispatcher.Android\Dispatcher.Android.csproj", "{52381C0D-EAAA-42D6-BAE9-66657B9E0A21}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DataUtils", "DataUtils\DataUtils.shproj", "{F0A33BE6-6DF6-48DE-8558-39B30DE40B07}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DataUtils\DataUtils.projitems*{52381c0d-eaaa-42d6-bae9-66657b9e0a21}*SharedItemsImports = 4
+		DataUtils\DataUtils.projitems*{f0a33be6-6df6-48de-8558-39b30de40b07}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|iPhone = Debug|iPhone

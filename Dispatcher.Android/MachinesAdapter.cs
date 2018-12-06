@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-
 using Android.App;
-using Android.Content;
+using Android.Content.Res;
 using Android.Graphics;
-using Android.Media;
-using Android.OS;
-using Android.Runtime;
-using Android.Support.V7.App;
 using Android.Support.V7.Widget;
 using Android.Views;
-using Android.Widget;
 using DataUtils;
+using Console = System.Console;
 
 namespace Dispatcher.Android
 {
@@ -24,6 +19,7 @@ namespace Dispatcher.Android
         public MachinesAdapter(List<Machine> machines)
         {
             Machines = machines;
+            cachedImages = new Dictionary<string, Bitmap>();
         }
 
         public override RecyclerView.ViewHolder
@@ -35,20 +31,59 @@ namespace Dispatcher.Android
             return vh;
         }
 
+        readonly AssetManager assets = Application.Context.Assets;
+
+        private Dictionary<string, Bitmap> cachedImages;
+
+        private Bitmap GetImageFromResources(string imagefileName)
+        {
+            if (string.IsNullOrEmpty(imagefileName)) return null;
+
+            if (cachedImages.ContainsKey(imagefileName))
+            {
+                return cachedImages[imagefileName];
+            }
+
+            try
+            {
+                var stream = assets.List("").Contains(imagefileName) ? assets.Open(imagefileName) : assets.Open(imagefileName + ".png");
+                var bitmap = BitmapFactory.DecodeStream(stream);
+
+                if (!cachedImages.ContainsKey(imagefileName))
+                {
+                    cachedImages.Add(imagefileName, bitmap);
+                }
+
+                return bitmap;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                // throw;
+            }
+
+            return null;
+        }
+        
         public override void
             OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
             MachineViewHolder cell = holder as MachineViewHolder;
             var item = Machines[position];
-            // cell.MachineIcon = item.type.iconName;
+
+            cell.Image.SetImageBitmap(GetImageFromResources(item.type.iconName));
             cell.Title.Text = item.GetNameStr();
             cell.Description.Text = item.GetDivisionStr();
+
+            cell.MachineStateIcon.SetImageBitmap(item.serviceState.code > MachineServiceStateCodes.Work
+                ? GetImageFromResources(item.serviceState.iconName)
+                : GetImageFromResources(item.state.iconName));
 
             if (item.sensors.Count != 0)
             {
                 Sensor sensor = item.sensors[0];
 
-               // cell.SensorIcon = sensor.type.iconName;
+                cell.SensorIconCell.SetImageBitmap(GetImageFromResources(sensor.type.iconName));
                 cell.MainValue = sensor.mainValue.ToString("F2");
                 cell.MainValueSymbol = sensor.type.mainValueSymbol;
 
