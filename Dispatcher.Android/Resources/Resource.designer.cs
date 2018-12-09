@@ -2684,8 +2684,8 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f0800a0
 			public const int mainValueSymbolTextView = 2131230880;
 			
-			// aapt resource value: 0x7f08009e
-			public const int mainValueTextView = 2131230878;
+			// aapt resource value: 0x7f08009f
+			public const int mainValueTextView = 2131230879;
 			
 			// aapt resource value: 0x7f0800ca
 			public const int masked = 2131230922;
@@ -2876,8 +2876,8 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f08004b
 			public const int start = 2131230795;
 			
-			// aapt resource value: 0x7f08009f
-			public const int stateImageView = 2131230879;
+			// aapt resource value: 0x7f08009e
+			public const int stateImageView = 2131230878;
 			
 			// aapt resource value: 0x7f0800a8
 			public const int status_bar_latest_event_content = 2131230888;

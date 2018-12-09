@@ -71,13 +71,16 @@ namespace Dispatcher.Android
             MachineViewHolder cell = holder as MachineViewHolder;
             var item = Machines[position];
 
-            cell.Image.SetImageBitmap(GetImageFromResources(item.type.iconName));
+            cell.MachineIcon.SetImageBitmap(GetImageFromResources(item.type.iconName));
+
+            cell.MachineStateIcon.SetImageBitmap(item.serviceState.code > MachineServiceStateCodes.Work
+               ? GetImageFromResources(item.serviceState.iconName)
+               : GetImageFromResources(item.state.iconName));
+
             cell.Title.Text = item.GetNameStr();
             cell.Description.Text = item.GetDivisionStr();
 
-            cell.MachineStateIcon.SetImageBitmap(item.serviceState.code > MachineServiceStateCodes.Work
-                ? GetImageFromResources(item.serviceState.iconName)
-                : GetImageFromResources(item.state.iconName));
+           
 
             if (item.sensors.Count != 0)
             {
@@ -108,40 +111,11 @@ namespace Dispatcher.Android
             if ((item.state.code == MachineStateCodes.Failure) || (item.serviceState.code == MachineServiceStateCodes.Broken))
                 cell.SetColor(Color.Red);
             else if ((item.divisionPosition.ID != item.divisionOwner.ID) && (item.divisionPosition.ID != 0))
-                cell.SetColor(Color.Argb(255, 0, 0, 128));
+                cell.SetColor(Color.Argb(128, 255, 0, 0));
 
             if (item.sensors.Count != 0)
                 if ((DateTime.Now - item.sensors[0].lastTime).TotalMinutes > Settings.greyOfflineMinutes)
-                    cell.SetColor(Color.Gray);            
-
-            /*
-             * 
-
-                if (item.serviceState.code > MachineServiceStateCodes.Work)
-                    cell.MachineStateIcon = item.serviceState.iconName;
-                else
-                    cell.MachineStateIcon = item.state.iconName;
-
-                cell.Name = item.GetNameStr();
-
-                cell.Division = item.GetDivisionStr();
-
-               
-
-                cell.SetColor(UIColor.Black);
-
-                if ((item.state.code == MachineStateCodes.Failure) || (item.serviceState.code == MachineServiceStateCodes.Broken))
-                    cell.SetColor(UIColor.Red);
-                else if ((item.divisionPosition.ID != item.divisionOwner.ID) && (item.divisionPosition.ID != 0))
-                    cell.SetColor(UIColor.FromRGBA(1, 0, 0, 0.6f));
-
-                if (item.sensors.Count != 0)
-                    if ((DateTime.Now - item.sensors[0].lastTime).TotalMinutes > Settings.greyOfflineMinutes)
-                        cell.SetColor(UIColor.Gray);      
-                
-
-                cell.UserInteractionEnabled = true;
-             */
+                    cell.SetColor(Color.Gray);                       
         }
 
         public override int ItemCount
