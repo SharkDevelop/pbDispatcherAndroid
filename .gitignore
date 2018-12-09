@@ -1,5 +1,6 @@
 obj/
 bin/
+.vs/
 *.zip
 *.apk
 *.ipa
