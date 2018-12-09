@@ -99,7 +99,7 @@ namespace Dispatcher.Android
             }
             else
             {
-               // cell.SensorIcon = "";
+                cell.SensorIconCell.SetImageBitmap(null);
                 cell.MainValue = "";
                 cell.MainValueSymbol = "";
                 cell.AdditionalValue = "";
