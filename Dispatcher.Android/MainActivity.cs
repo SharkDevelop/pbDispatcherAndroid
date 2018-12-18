@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Preferences;
-using Android.Runtime;
-using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 using DataUtils;
+using Dispatcher.Android.Helpers;
 using Timer = System.Timers.Timer;
 
 namespace Dispatcher.Android
@@ -20,15 +16,17 @@ namespace Dispatcher.Android
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true, ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : AppCompatActivity
     {
-        private byte needDataUpdate = 0;
-
-        DateTime lastUpdateTime = DateTime.MinValue;
-
-        private Timer timer;
-
-        RecyclerView mRecyclerView;
-        RecyclerView.LayoutManager mLayoutManager;
-        MachinesAdapter mAdapter;
+        private const float UpdateInterval = 100f;
+        private Timer _timer;
+        
+        private byte _needDataUpdate;
+        private DateTime _lastUpdateTime = DateTime.MinValue;
+        
+        private RecyclerView _recyclerView;
+        private RecyclerView.LayoutManager _layoutManager;
+        private MachinesAdapter _adapter;
+        private ImageView _pingIndicator;
+        private TextView _tvTitle;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -37,146 +35,145 @@ namespace Dispatcher.Android
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
-            //var button = FindViewById<Button>(Resource.Id.button1);
-
-            //button.Click += (sender, args) =>
-            //{
-            //    Intent intent = new Intent();
-            //    intent.SetClass(BaseContext, typeof(UserSettingsActivity));
-            //    intent.SetFlags(ActivityFlags.ReorderToFront);
-            //    StartActivity(intent);
-            //};
-
-            mRecyclerView = FindViewById<RecyclerView>(Resource.Id.recyclerView);
-
-            // Plug in the linear layout manager:
-            mLayoutManager = new LinearLayoutManager(this);
-            mRecyclerView.SetLayoutManager(mLayoutManager);
-
-            mAdapter = new MachinesAdapter(DataManager.machines);
-            mRecyclerView.SetAdapter(mAdapter);
+            FindViewById<Button>(Resource.Id.btnSettings)
+                .Click += (sender, args) => StartSettingsActivity();
             
-            // MachineTable.Source = new MachinesTableSource(this);
-            //MachineTable.Delegate = new 
+            _pingIndicator = FindViewById<ImageView>(Resource.Id.ivPing);
+            _tvTitle = FindViewById<TextView>(Resource.Id.tvTitle);
+            
+            _recyclerView = FindViewById<RecyclerView>(Resource.Id.recyclerView);
+            _layoutManager = new LinearLayoutManager(this);
+            _recyclerView.SetLayoutManager(_layoutManager);
+
+            _adapter = new MachinesAdapter(DataManager.machines);
+            _recyclerView.SetAdapter(_adapter);
+            _adapter.ItemClicked += StartSelectedMachineActivity;
+                        
             UpdateViewValues();
-        }
-
-        public override bool OnCreateOptionsMenu(IMenu menu)
-        {
-            var inflater = MenuInflater;
-            inflater.Inflate(Resource.Menu.toolbar_menu, menu);
-            return true;
-        }
-
-        public override bool OnOptionsItemSelected(IMenuItem item)
-        {
-            int id = item.ItemId;
-            if (id == Resource.Id.action_settings)
-            {
-                Intent intent = new Intent();
-                intent.SetClass(BaseContext, typeof(UserSettingsActivity));
-                intent.SetFlags(ActivityFlags.ReorderToFront);
-                StartActivity(intent);
-                return true;
-            }
-
-            return base.OnOptionsItemSelected(item);
-        }
+        }     
 
         protected override void OnStart()
         {
             base.OnStart();
 
             DataManager.SheduleGetMachinesRequest(DataUpdateCallback);
-            lastUpdateTime = DateTime.Now;
+            _lastUpdateTime = DateTime.Now;
 
-            if (DataManager.LoginImpossible == true)
+            if (DataManager.LoginImpossible)
             {
-                Intent intent = new Intent();
-                intent.SetClass(BaseContext, typeof(UserSettingsActivity));
-                intent.SetFlags(ActivityFlags.ReorderToFront);
-                StartActivity(intent);
+                StartUserActivity();
                 return;
             }
 
-            timer = new Timer { AutoReset = true, Interval = 1000f };
-            timer.Elapsed += delegate { CheckNewData(); };
-            timer.Start();
+            _timer = new Timer { AutoReset = true, Interval = UpdateInterval };
+            _timer.Elapsed += delegate { CheckNewData(); };
+            _timer.Start();
 
             FillList();
-        }
+        }        
 
-        protected void OnListItemClick(ListView l, View v, int position, long id)
-        {
-          //  var t = items[position];
-          //  Android.Widget.Toast.MakeText(this, t, Android.Widget.ToastLength.Short).Show();
-        }
-
-        public void CheckNewData()
+        private void CheckNewData()
         {
             if (DataManager.ConnectState == ConnectStates.AuthPassed)
             {
-               // this.Title = "Все";
+                UpdateTitle(Resource.String.all);
                 if (DataManager.selectedDivision != null)
                 {
-               //     Title = DataManager.selectedDivision.name;
-                  
-                    //Window.SetTitle(DataManager.selectedDivision.name);
+                    UpdateTitle(DataManager.selectedDivision.name);
                 }
-                
-                //if (DataManager.Ping < 200)
-                //    pingImageView.Image = UIImage.FromFile("GreenCircle.png");
-                //else if (DataManager.Ping < 500)
-                //    pingImageView.Image = UIImage.FromFile("YelowCircle.png");
-                //else
-                //    pingImageView.Image = UIImage.FromFile("RedCircle.png");
+
+                if (DataManager.Ping < 200)
+                    UpdatePingIndicatorImage("GreenCircle");
+                else if (DataManager.Ping < 500)
+                    UpdatePingIndicatorImage("YelowCircle");                
+                else
+                    UpdatePingIndicatorImage("RedCircle");                
             }
             else if (DataManager.ConnectState == ConnectStates.SocketConnected)
             {
-              // this.Title = "Нет авторизации";
-                //  pingImageView.Image = UIImage.FromFile("GreyCircle.png");
+                UpdateTitle(Resource.String.no_authorization);
+                UpdatePingIndicatorImage("GreyCircle");                
             }
             else
             {
-               // this.Title = "Нет связи";
-                //  pingImageView.Image = UIImage.FromFile("GreyCircle.png");
+                UpdateTitle(Resource.String.no_connection);
+                UpdatePingIndicatorImage("GreyCircle");
             }
 
-            if (needDataUpdate > 0)
+            if (_needDataUpdate > 0)
             {
-                needDataUpdate--;
+                _needDataUpdate--;
+                
                 UpdateViewValues();
-               // pingImageView.Hidden = false;
+                RunOnUiThread(() => _pingIndicator.Visibility = ViewStates.Visible);
             }
-            else if ((DateTime.Now.Subtract(lastUpdateTime).TotalMilliseconds > Settings.updatePeriodMs) && (DataManager.machineTypes.Count != 0) && (DataManager.NotAnsweredRequestsCount == 0))
+            else if (DateTime.Now.Subtract(_lastUpdateTime).TotalMilliseconds > Settings.updatePeriodMs && 
+                     DataManager.machineTypes.Count != 0 && 
+                     DataManager.NotAnsweredRequestsCount == 0)
             {
                 DataManager.SheduleGetMachinesRequest(DataUpdateCallback);
-                lastUpdateTime = DateTime.Now;
-                //pingImageView.Hidden = true;
+                
+                _lastUpdateTime = DateTime.Now;
+                RunOnUiThread(() => _pingIndicator.Visibility = ViewStates.Invisible);
             }
         }
 
-        public void UpdateViewValues()
+        private void UpdatePingIndicatorImage(string name)
         {
-             this.RunOnUiThread(FillList);
+            RunOnUiThread(()=> _pingIndicator.SetImageBitmap(ResourcesHelper.GetImageFromResources(name)));
+        }
+
+        private void UpdateTitle(int resourceId)
+        {
+            RunOnUiThread(() => _tvTitle.SetText(resourceId));
+        }
+
+        private void UpdateTitle(string title)
+        {
+            RunOnUiThread(() => _tvTitle.Text = title);
+        }
+
+        private void UpdateViewValues()
+        {
+             RunOnUiThread(FillList);
 
             //todo: добавить это
             //UIApplication.SharedApplication.ApplicationIconBadgeNumber = DataManager.problemsCount;
         }
 
-        public void DataUpdateCallback(object requestState)
+        private void DataUpdateCallback(object requestState)
         {
             //if (requestState == RequestStates.Completed)
-            needDataUpdate++;
+            _needDataUpdate++;
+        }
+
+        private void StartSelectedMachineActivity(int position)
+        {
+            var intent = new Intent(this, typeof(MachineDetailsActivity));
+            intent.PutExtra(Constants.ItemPosition, position);
+            StartActivity(intent);
+        }
+
+        private void StartSettingsActivity()
+        {
+            var intent = new Intent(this, typeof(SettingsActivity));
+            StartActivity(intent);
+        }
+
+        private void StartUserActivity()
+        {
+            var intent = new Intent();
+            intent.SetClass(BaseContext, typeof(UserSettingsActivity));
+            intent.SetFlags(ActivityFlags.ReorderToFront);
+            StartActivity(intent);
         }
 
         private void FillList()
         {
             var machines = DataManager.machines;
-
             if (machines.Count <= 0) return;
 
-            mAdapter.NotifyDataSetChanged();
+            _adapter.NotifyDataSetChanged();
         }
     }
 }

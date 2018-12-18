@@ -19,7 +19,7 @@ using Dispatcher.Android.Utils;
 namespace Dispatcher.Android
 {
     [Activity(ScreenOrientation = ScreenOrientation.Portrait)]
-    public class UserSettingsActivity : AppCompatActivity
+    public class UserSettingsActivity : BaseActivity
     {
         private Timer timer;
         private byte needDataUpdate = 0;
@@ -50,8 +50,9 @@ namespace Dispatcher.Android
         {
             base.OnCreate(savedInstanceState);
 
-            SetContentView(Resource.Layout.UserSettingsActivity);
-
+            SetContentView(Resource.Layout.activity_user);
+            InitActionBar(Resource.String.user);
+                        
             userNameText = FindViewById<TextView>(Resource.Id.userNameLabel);
 
             loginEdit = FindViewById<EditText>(Resource.Id.loginEdit);

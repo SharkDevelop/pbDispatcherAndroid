@@ -2,6 +2,7 @@
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using System;
 
 namespace Dispatcher.Android
 {
@@ -44,17 +45,10 @@ namespace Dispatcher.Android
         {
             get { return AdditionalValueSymbolCell.Text; }
             set { AdditionalValueSymbolCell.Text = value; }
-        }
+        }        
 
-        //public string MachineIcon
-        //{
-        //    get { return MachineIconCell.ToString(); }
-        //    set { MachineIconCell.Image = UIImage.FromFile(value); }
-        //}
-
-        public MachineViewHolder(View itemView) : base(itemView)
+        public MachineViewHolder(View itemView, Action<int> listener) : base(itemView)
         {
-            // Locate and cache view references:
             MachineIcon = itemView.FindViewById<ImageView>(Resource.Id.imageView);
             SensorIconCell = itemView.FindViewById<ImageView>(Resource.Id.stateImageView);
             MachineStateIcon = itemView.FindViewById<ImageView>(Resource.Id.sensorImageView);
@@ -65,6 +59,8 @@ namespace Dispatcher.Android
             MainValueSymbolCell = itemView.FindViewById<TextView>(Resource.Id.mainValueSymbolTextView);
             AdditionalValueCell = itemView.FindViewById<TextView>(Resource.Id.addValueTextView);
             AdditionalValueSymbolCell = itemView.FindViewById<TextView>(Resource.Id.addValueSymbolTextView);
+
+            itemView.Click += (sender, e) => listener(LayoutPosition);
         }
 
         public void SetColor(Color color)
