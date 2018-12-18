@@ -78,6 +78,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SensorAlertsActivity.cs" />
     <Compile Include="ServiceRequestActivity.cs" />
     <Compile Include="SettingsActivity.cs" />
     <Compile Include="UserSettingsActivity.cs">
@@ -317,6 +318,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\item_filter.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_sensor_alerts.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

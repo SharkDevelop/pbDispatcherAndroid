@@ -41,6 +41,9 @@ namespace Dispatcher.Android
             FindViewById<TextView>(Resource.Id.tvService)
                 .Click += (sender, args) => StartServiceRequestActivity();
             
+            FindViewById<ImageView>(Resource.Id.ivSensorAlerts)
+                .Click += (sender, args) => StartSensorAlertsActivity();
+            
             _timerHolder = new TimerHolder(UpdateInterval, CheckNewData);
             
             InitCurrentMachine();
@@ -248,6 +251,13 @@ namespace Dispatcher.Android
         private void StartServiceRequestActivity()
         {
             var intent = new Intent(this, typeof(ServiceRequestActivity));
+            intent.PutExtra(Constants.ItemPosition, _currentMachinePosition);
+            StartActivity(intent);
+        }
+        
+        private void StartSensorAlertsActivity()
+        {
+            var intent = new Intent(this, typeof(SensorAlertsActivity));
             intent.PutExtra(Constants.ItemPosition, _currentMachinePosition);
             StartActivity(intent);
         }

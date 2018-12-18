@@ -17,6 +17,18 @@
   <string name="updating" tools:ignore="TypographyEllipsis">Обновление...</string>
   <string name="loading" tools:ignore="TypographyEllipsis">Загрузка...</string>
 
+  <string name="sensor_alerts">Тревоги датчика</string>
+  <string name="tolerance_from">Допуск от:</string>
+  <string name="to">до:</string>
+
+  <string name="save">Сохранить</string>
+  <string name="cancel">Отмена</string>
+  <string name="alert_if_tolerance_break_up">Тревога при нарушении допуска более чем на:</string>
+
+  <string name="hour">час.</string>
+  <string name="min">мин.</string>
+  <string name="sec">сек.</string>  
+
   <string name="request_text">Текст запроса:</string>
   <string name="service_intend">Сервисный инцидент</string>
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+	android:background="@android:color/white"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -53,7 +54,7 @@
                 android:layout_gravity="right|center"  
 				android:src="@mipmap/ic_alert"
 				android:tint="@color/colorBlue"
-                android:id="@+id/ivAlert"
+                android:id="@+id/ivSensorAlerts"
             />
         </LinearLayout>
 
