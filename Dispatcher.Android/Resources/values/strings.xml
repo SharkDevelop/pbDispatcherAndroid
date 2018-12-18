@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <string name="app_name">Диспетчер</string>
   <string name="settings">Настройки</string>
   <string name="back">Назад</string>
@@ -13,6 +13,9 @@
   <string name="no_authorization">Нет авторизации</string>
   <string name="no_connection">Нет связи</string>
   <string name="user">Пользователь:</string>
+  <string name="user_title">Пользователь</string>
+  <string name="updating" tools:ignore="TypographyEllipsis">Обновление...</string>
+  <string name="loading" tools:ignore="TypographyEllipsis">Загрузка...</string>
 
   <string name="request_text">Текст запроса:</string>
   <string name="service_intend">Сервисный инцидент</string>

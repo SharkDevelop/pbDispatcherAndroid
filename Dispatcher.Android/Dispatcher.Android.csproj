@@ -66,6 +66,8 @@
     <Compile Include="BaseActivity.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DataUtils.cs" />
+    <Compile Include="FilterListActivity.cs" />
+    <Compile Include="FilterListAdapter.cs" />
     <Compile Include="Helpers\DialogHelper.cs" />
     <Compile Include="Helpers\ResourcesHelper.cs" />
     <Compile Include="MachineDetailsActivity.cs" />
@@ -82,6 +84,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils\MinMaxInputFilter.cs" />
+    <Compile Include="Utils\TimerHolder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -306,6 +309,16 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_service_request.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_filters_list.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\item_filter.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="..\DataUtils\DataUtils.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

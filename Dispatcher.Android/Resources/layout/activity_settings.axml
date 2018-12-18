@@ -153,7 +153,7 @@
                 android:textSize="@dimen/setting_item_font"
                 android:text="@string/service_state"
                 android:textColor="@color/colorBlack"
-                android:id="@+id/tvServiceSate"
+                android:id="@+id/tvServiceState"
             />
             <TextView
                 android:layout_weight=".70"
@@ -164,7 +164,7 @@
                 android:textColor="@color/colorBlue"
                 android:textAlignment="center"
                 android:text="@string/all"
-                android:id="@+id/tvServiceSateValue"
+                android:id="@+id/tvServiceStateValue"
             />
         </LinearLayout>
         <!--Only my-->
@@ -181,7 +181,7 @@
                 android:textSize="@dimen/setting_item_font"
                 android:text="@string/only_my"
                 android:textColor="@color/colorBlack"
-                android:layout_below="@id/tvServiceSate"
+                android:layout_below="@id/tvServiceState"
                 android:id="@+id/tvOnlyMy"
             />
             <Switch

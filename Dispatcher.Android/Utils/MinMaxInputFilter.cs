@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Text;
-using Android.Views;
-using Android.Widget;
 
 namespace Dispatcher.Android.Utils
 {
     public class MinMaxInputFilter : Java.Lang.Object, IInputFilter
     {
-        private int _min = 0;
-        private int _max = 0;
+        private readonly int _min;
+        private readonly int _max;
 
         public MinMaxInputFilter(int min, int max)
         {

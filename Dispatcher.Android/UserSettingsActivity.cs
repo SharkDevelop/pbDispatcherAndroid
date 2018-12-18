@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Timers;
 using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Runtime;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
 using Android.Text;
-using Android.Views;
 using Android.Widget;
 using DataUtils;
 using Dispatcher.Android.Utils;
@@ -22,9 +14,7 @@ namespace Dispatcher.Android
     public class UserSettingsActivity : BaseActivity
     {
         private Timer timer;
-        private byte needDataUpdate = 0;
-
-        DateTime lastUpdateTime = DateTime.MinValue;
+        private byte needDataUpdate;
 
         private Button changeUserButton;
 
@@ -51,7 +41,7 @@ namespace Dispatcher.Android
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.activity_user);
-            InitActionBar(Resource.String.user);
+            InitActionBar();
                         
             userNameText = FindViewById<TextView>(Resource.Id.userNameLabel);
 
@@ -79,7 +69,7 @@ namespace Dispatcher.Android
 
             changeUserButton.Click += (sender, args) =>
             {
-                userNameText.Text = "Обновление...";
+                userNameText.SetText(Resource.String.updating);
 
                 DataManager.ChangeUser(loginEdit.Text, passwordEdit.Text, ChangeUserCallback);
             };
@@ -88,9 +78,9 @@ namespace Dispatcher.Android
             {
                 DataManager.SwitchToNextServer();
                 DataUtils.StoreValues();
-
-                serverButton.Text = "Загрузка...";
-
+                
+                serverButton.SetText(Resource.String.loading);
+                
                 DataManager.ReconnectToServer(ChangeServerCallback);
             };
 
@@ -101,21 +91,19 @@ namespace Dispatcher.Android
         {
             base.OnStart();
 
-            //SetLayout();
-
             DataManager.SheduleGetUserSettingsRequest(DataUpdateCallback);
 
-            timer = new Timer {AutoReset = true, Interval = 200f};
+            timer = new Timer { AutoReset = true, Interval = 200f };
             timer.Elapsed += delegate { CheckNewData(); };
             timer.Start();
 
-            if (DataManager.LoginImpossible == true)
+            if (DataManager.LoginImpossible)
             {
                 loginEdit.Hint = "demo";
                 passwordEdit.Hint = "demo";
             }
-
-            Title = "Пользователь";
+            
+            UpdateTitle(Resource.String.user_title);
         }
 
         protected override void OnStop()
@@ -137,7 +125,7 @@ namespace Dispatcher.Android
             timer.Dispose();
         }
 
-        public void ChangeUserCallback(object requestState)
+        private void ChangeUserCallback(object requestState)
         {
             DataUtils.StoreValues();
 
@@ -146,7 +134,7 @@ namespace Dispatcher.Android
             DataManager.SheduleGetDivisionsRequest(null);
         }
 
-        public void ChangeServerCallback(object requestState)
+        private void ChangeServerCallback(object requestState)
         {
             needDataUpdate++;
 
@@ -154,33 +142,37 @@ namespace Dispatcher.Android
             DataManager.SheduleGetDivisionsRequest(null);
         }
 
-        public void DataUpdateCallback(object requestState)
+        private void DataUpdateCallback(object requestState)
         {
             //if (requestState == RequestStates.Completed)
             needDataUpdate++;
         }
 
-        private int timerCnt = 0;
-        public void CheckNewData()
+        private void CheckNewData()
         {
             switch (DataManager.ConnectState)
             {
                 case ConnectStates.AuthPassed:
-                    Title = "Пользователь";
+                    UpdateTitle(Resource.String.user_title);
                     break;
                 case ConnectStates.SocketConnected:
-                    Title = "Нет авторизации";
+                    UpdateTitle(Resource.String.no_authorization);
                     break;
                 default:
-                    Title = "Нет связи";
+                    UpdateTitle(Resource.String.no_connection);
                     break;
             }           
 
             if (needDataUpdate > 0)
             {
                 needDataUpdate--;
-                UpdateViewValues();
+                UpdateViewValuesOnUiThread();
             }
+        }
+        
+        private void UpdateViewValuesOnUiThread()
+        {
+            RunOnUiThread(UpdateViewValues);
         }
 
         private void UpdateViewValues()
@@ -190,9 +182,9 @@ namespace Dispatcher.Android
             if (DataManager.ConnectState == ConnectStates.AuthPassed)
                 userNameText.Text = DataManager.UserName;
             else if (DataManager.ConnectState == ConnectStates.SocketConnected)
-                userNameText.Text = "Нет авторизации";
+                userNameText.SetText(Resource.String.no_authorization);
             else
-                userNameText.Text = "Нет связи";
+                userNameText.SetText(Resource.String.no_connection);
 
             warningHourFrom.Text = DataManager.userSettings.notificationsFrom.Hour.ToString("D2");
             warningMinuteFrom.Text = DataManager.userSettings.notificationsFrom.Minute.ToString("D2");

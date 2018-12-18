@@ -21,8 +21,6 @@ namespace Dispatcher.Android
         private MachineServiceStateCodes _confirmState;
         private MachineServiceStateCodes _rejectState;
         
-        private TextView _tvTitle;
-        
         private TextView _tvTakeForRepair;
         private TextView _tvRefuseToRepair;
         private TextView _tvMachineNumberRequest;
@@ -40,8 +38,6 @@ namespace Dispatcher.Android
 
             SetContentView(Resource.Layout.activity_service_request);
             InitActionBar(Resource.String.service_intend);
-            
-            _tvTitle = FindViewById<TextView>(Resource.Id.tvActionBarTitle);
             
             _tvTakeForRepair = FindViewById<TextView>(Resource.Id.tvTakeForRepair);
             _tvRefuseToRepair = FindViewById<TextView>(Resource.Id.tvRefuseToRepair);
@@ -206,16 +202,6 @@ namespace Dispatcher.Android
         private void UpdateViewValuesInUiThread()
         {
             RunOnUiThread(UpdateViewValues);
-        }
-        
-        private void UpdateTitle(int resourceId)
-        {
-            RunOnUiThread(() => _tvTitle.SetText(resourceId));
-        }
-
-        private void UpdateTitle(string title)
-        {
-            RunOnUiThread(() => _tvTitle.Text = title);
         }
 
         private void TakeForRepair()

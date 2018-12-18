@@ -9,10 +9,10 @@ using OxyPlot.Series;
 using OxyPlot.Xamarin.Android;
 using System;
 using System.Collections.Generic;
-using System.Timers;
 using Android.Content;
 using Android.Support.V7.Widget;
 using Dispatcher.Android.Helpers;
+using Dispatcher.Android.Utils;
 
 namespace Dispatcher.Android
 {
@@ -20,7 +20,7 @@ namespace Dispatcher.Android
     public class MachineDetailsActivity : BaseActivity
     {
         private const float UpdateInterval = 100f;
-        private Timer _timer;
+        private TimerHolder _timerHolder;
         private byte _needDataUpdate;
         private DateTime _lastUpdateTime = DateTime.MinValue;
 
@@ -28,8 +28,6 @@ namespace Dispatcher.Android
         private Machine _machine;
         private readonly List<MachineStatesLogElement> _statesLogs = new List<MachineStatesLogElement>();
 
-        private TextView _tvTitle;
-        
         private RecyclerView _rvMachineStatesLog;
         private RecyclerView.LayoutManager _layoutManager;
         private MachineStatesAdapter _adapter;
@@ -39,11 +37,11 @@ namespace Dispatcher.Android
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.activity_machine_details);
-
-            _tvTitle = FindViewById<TextView>(Resource.Id.tvActionBarTitle);
             
             FindViewById<TextView>(Resource.Id.tvService)
                 .Click += (sender, args) => StartServiceRequestActivity();
+            
+            _timerHolder = new TimerHolder(UpdateInterval, CheckNewData);
             
             InitCurrentMachine();
             InitMachineStatesLogListView();
@@ -59,15 +57,14 @@ namespace Dispatcher.Android
                 Settings.machineStatesLogMaxElements, 
                 DataUpdateCallback);
             
-            StartUpdateTimer();
+            _timerHolder.Start();
             FillList();
         }
 
         protected override void OnStop()
         {
             base.OnStop();
-
-            StopUpdateTimer();
+            _timerHolder.Stop();
         }
 
         private void InitCurrentMachine()
@@ -139,20 +136,6 @@ namespace Dispatcher.Android
 
                 return plotModel;
             }
-        }
-        
-        private void StartUpdateTimer()
-        {
-            _timer = new Timer { AutoReset = true, Interval = UpdateInterval };
-            _timer.Elapsed += delegate { CheckNewData(); };
-            _timer.Start();
-        }
-        
-        private void StopUpdateTimer()
-        {
-            _timer.Stop();
-            _timer.Dispose();
-            _timer = null;
         }
         
         private void DataUpdateCallback(object requestResult)
@@ -230,16 +213,6 @@ namespace Dispatcher.Android
             }
         }
         
-        private void UpdateTitle(int resourceId)
-        {
-            RunOnUiThread(() => _tvTitle.SetText(resourceId));
-        }
-
-        private void UpdateTitle(string title)
-        {
-            RunOnUiThread(() => _tvTitle.Text = title);
-        }
-        
         private void UpdateViewValues()
         {
             RunOnUiThread(FillList);
@@ -256,7 +229,7 @@ namespace Dispatcher.Android
         {
             if (_statesLogs.Count < position) return;
             
-            StopUpdateTimer();
+            _timerHolder.Stop();
 
             var selectedState = _statesLogs[position];
             
@@ -269,7 +242,7 @@ namespace Dispatcher.Android
 
             var caption = selectedState.state.name;
             
-            DialogHelper.ShowDialog(this, caption, description, "OK", StartUpdateTimer);
+            DialogHelper.ShowDialog(this, caption, description, "OK", _timerHolder.Start);
         }
         
         private void StartServiceRequestActivity()

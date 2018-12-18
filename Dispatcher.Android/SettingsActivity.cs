@@ -19,11 +19,28 @@ namespace Dispatcher.Android
             SetContentView(Resource.Layout.activity_settings);
             InitActionBar(Resource.String.settings);
 
+            FindViewById<TextView>(Resource.Id.tvCityValue)
+                .Click += (sender, args) => StartFilterActivity(0);
+            FindViewById<TextView>(Resource.Id.tvUnitValue)
+                .Click += (sender, args) => StartFilterActivity(1);
+            FindViewById<TextView>(Resource.Id.tvFacilityTypeValue)
+                .Click += (sender, args) => StartFilterActivity(2);
+            FindViewById<TextView>(Resource.Id.tvWorkSateValue)
+                .Click += (sender, args) => StartFilterActivity(3);
+            FindViewById<TextView>(Resource.Id.tvServiceStateValue)
+                .Click += (sender, args) => StartFilterActivity(0);
+
             _tvUserNameValue = FindViewById<TextView>(Resource.Id.tvUserNameValue);
             _tvUserNameValue.Text = DataManager.UserName;
             _tvUserNameValue.Click += (sender, args) => StartUserActivity();
         }
-        
+
+        private void StartFilterActivity(int filterType)
+        {
+            var intent = new Intent(this, typeof(FilterListActivity));
+            StartActivity(intent);
+        }
+
         private void StartUserActivity()
         {
             var intent = new Intent();
