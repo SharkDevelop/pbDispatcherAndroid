@@ -182,7 +182,7 @@ namespace Dispatcher.Android
             if (DataManager.ConnectState == ConnectStates.AuthPassed)
                 userNameText.Text = DataManager.UserName;
             else if (DataManager.ConnectState == ConnectStates.SocketConnected)
-                userNameText.SetText(Resource.String.no_authorization);
+                userNameText.SetText(Resource.String.no_connection);
             else
                 userNameText.SetText(Resource.String.no_connection);
 
