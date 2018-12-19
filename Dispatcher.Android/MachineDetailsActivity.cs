@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using Android.Content;
 using Android.Support.V7.Widget;
+using Dispatcher.Android.Appl;
 using Dispatcher.Android.Helpers;
 using Dispatcher.Android.Utils;
 
@@ -24,7 +25,6 @@ namespace Dispatcher.Android
         private byte _needDataUpdate;
         private DateTime _lastUpdateTime = DateTime.MinValue;
 
-        private int _currentMachinePosition;
         private Machine _machine;
         private readonly List<MachineStatesLogElement> _statesLogs = new List<MachineStatesLogElement>();
 
@@ -35,6 +35,8 @@ namespace Dispatcher.Android
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            
+            _timerHolder = new TimerHolder(UpdateInterval, CheckNewData);
 
             SetContentView(Resource.Layout.activity_machine_details);
             
@@ -43,8 +45,6 @@ namespace Dispatcher.Android
             
             FindViewById<ImageView>(Resource.Id.ivSensorAlerts)
                 .Click += (sender, args) => StartSensorAlertsActivity();
-            
-            _timerHolder = new TimerHolder(UpdateInterval, CheckNewData);
             
             InitCurrentMachine();
             InitMachineStatesLogListView();
@@ -72,18 +72,7 @@ namespace Dispatcher.Android
 
         private void InitCurrentMachine()
         {
-            var position = Intent.GetIntExtra(Constants.ItemPosition, -1);
-            _currentMachinePosition = position;
-            
-            if (position >= 0 && DataManager.machines != null && 
-                DataManager.machines.Count > position)            
-                _machine = DataManager.machines[position];
-            else
-            {
-                OnBackPressed();
-                return;
-            }
-
+            _machine = AppSession.SelectedMachine;
             InitActionBar(_machine.GetNameStr());
 
             string sensorsCount = null;
@@ -251,14 +240,12 @@ namespace Dispatcher.Android
         private void StartServiceRequestActivity()
         {
             var intent = new Intent(this, typeof(ServiceRequestActivity));
-            intent.PutExtra(Constants.ItemPosition, _currentMachinePosition);
             StartActivity(intent);
         }
         
         private void StartSensorAlertsActivity()
         {
             var intent = new Intent(this, typeof(SensorAlertsActivity));
-            intent.PutExtra(Constants.ItemPosition, _currentMachinePosition);
             StartActivity(intent);
         }
     }

@@ -7,7 +7,9 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Widget;
 using DataUtils;
+using Dispatcher.Android.Appl;
 using Dispatcher.Android.Helpers;
+using Dispatcher.Android.Utils;
 
 namespace Dispatcher.Android
 {
@@ -15,8 +17,10 @@ namespace Dispatcher.Android
     public class ServiceRequestActivity : BaseActivity
     {
         private const float UpdateInterval = 100f;
-        private Timer _timer;
+        private TimerHolder _timerHolder;
         private byte _needDataUpdate;
+        
+        private Machine _machine;
         
         private MachineServiceStateCodes _confirmState;
         private MachineServiceStateCodes _rejectState;
@@ -30,11 +34,11 @@ namespace Dispatcher.Android
         private TextView _tvUserRequest;
         private EditText _etRequest;
         
-        private Machine _machine;
-        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            
+            _timerHolder = new TimerHolder(UpdateInterval, CheckNewData);
 
             SetContentView(Resource.Layout.activity_service_request);
             InitActionBar(Resource.String.service_intend);
@@ -65,42 +69,21 @@ namespace Dispatcher.Android
                 DataUpdateCallback);
             
             UpdateButtonValues();
-            StartUpdateTimer();
+            UpdateViewValues();
+            
+            _timerHolder.Start();
         }
         
         protected override void OnStop()
         {
             base.OnStop();
 
-            StopUpdateTimer();
-        }
-        
-        private void StartUpdateTimer()
-        {
-            _timer = new Timer { AutoReset = true, Interval = UpdateInterval };
-            _timer.Elapsed += delegate { CheckNewData(); };
-            _timer.Start();
-        }
-        
-        private void StopUpdateTimer()
-        {
-            _timer.Stop();
-            _timer.Dispose();
-            _timer = null;
+            _timerHolder.Stop();
         }
         
         private void InitCurrentMachine()
         {
-            var position = Intent.GetIntExtra(Constants.ItemPosition, -1);
-            
-            if (position >= 0 && DataManager.machines != null && 
-                DataManager.machines.Count > position)            
-                _machine = DataManager.machines[position];
-            else
-            {
-                OnBackPressed();
-                return;
-            }
+            _machine = AppSession.SelectedMachine;
 
             string sensorsCount = null;
             if (_machine.sensors.Count != 0)
@@ -159,7 +142,7 @@ namespace Dispatcher.Android
             }
             else if (_machine.serviceState.code == MachineServiceStateCodes.Broken)
             {
-                _tvTakeForRepair.Text = "Заявить о неисправности";
+                _tvTakeForRepair.Text = "Принять на ремонт";
                 _tvRefuseToRepair.Text = "Отказать в ремонте";
                 _tvRefuseToRepair.Enabled = true;
 
@@ -168,7 +151,7 @@ namespace Dispatcher.Android
             }
             else if (_machine.serviceState.code == MachineServiceStateCodes.Service)
             {
-                _tvTakeForRepair.Text = "Заявить о неисправности";
+                _tvTakeForRepair.Text = "Вернуть в эксплуатацию";
                 _tvRefuseToRepair.Text = "Списать";
                 _tvRefuseToRepair.Enabled = true;
 
@@ -193,7 +176,7 @@ namespace Dispatcher.Android
                 _tvMachineNumberRequest.Text += " (" + BitConverter.ToString(BitConverter.GetBytes(_machine.sensors[0].nodeID), 1, 1)
                                               + BitConverter.ToString(BitConverter.GetBytes(_machine.sensors[0].nodeID), 0, 1) + ")";
             
-            _ivStateRequest.SetImageBitmap(ResourcesHelper.GetImageFromResources(_machine.state.iconName));
+            _ivStateRequest.SetImageBitmap(ResourcesHelper.GetImageFromResources(_machine.serviceState.iconName));
             _tvStateNameRequest.Text = _machine.serviceState.name;
             _tvStartTimeRequest.Text = _machine.serviceStateTimeStart.ToString("dd.MM.yy  HH:mm:ss");
             _tvUserRequest.Text = _machine.userName;

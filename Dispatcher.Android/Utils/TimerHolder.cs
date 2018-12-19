@@ -26,6 +26,8 @@ namespace Dispatcher.Android.Utils
         
         public void Stop()
         {
+            if (_timer == null) return;
+            
             _timer.Stop();
             _timer.Dispose();
             _timer = null;

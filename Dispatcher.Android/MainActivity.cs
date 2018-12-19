@@ -8,8 +8,9 @@ using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 using DataUtils;
+using Dispatcher.Android.Appl;
 using Dispatcher.Android.Helpers;
-using Timer = System.Timers.Timer;
+using Dispatcher.Android.Utils;
 
 namespace Dispatcher.Android
 {
@@ -17,7 +18,7 @@ namespace Dispatcher.Android
     public class MainActivity : AppCompatActivity
     {
         private const float UpdateInterval = 100f;
-        private Timer _timer;
+        private TimerHolder _timerHolder;
         
         private byte _needDataUpdate;
         private DateTime _lastUpdateTime = DateTime.MinValue;
@@ -31,6 +32,7 @@ namespace Dispatcher.Android
         protected override void OnCreate(Bundle savedInstanceState)
         {
             DataUtils.Init();
+            _timerHolder = new TimerHolder(UpdateInterval, CheckNewData);
 
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
@@ -48,9 +50,7 @@ namespace Dispatcher.Android
             _adapter = new MachinesAdapter(DataManager.machines);
             _recyclerView.SetAdapter(_adapter);
             _adapter.ItemClicked += StartSelectedMachineActivity;
-                        
-            UpdateViewValues();
-        }     
+        }
 
         protected override void OnStart()
         {
@@ -64,13 +64,16 @@ namespace Dispatcher.Android
                 StartUserActivity();
                 return;
             }
+            
+            _timerHolder.Start();
+        }
 
-            _timer = new Timer { AutoReset = true, Interval = UpdateInterval };
-            _timer.Elapsed += delegate { CheckNewData(); };
-            _timer.Start();
-
-            FillList();
-        }        
+        protected override void OnStop()
+        {
+            base.OnStop();
+            
+            _timerHolder.Stop();
+        }
 
         private void CheckNewData()
         {
@@ -143,14 +146,16 @@ namespace Dispatcher.Android
 
         private void DataUpdateCallback(object requestState)
         {
-            //if (requestState == RequestStates.Completed)
             _needDataUpdate++;
         }
 
         private void StartSelectedMachineActivity(int position)
         {
+            if (DataManager.machines.Count <= position) return;
+            
+            AppSession.SelectedMachine = DataManager.machines[position];
+            
             var intent = new Intent(this, typeof(MachineDetailsActivity));
-            intent.PutExtra(Constants.ItemPosition, position);
             StartActivity(intent);
         }
 

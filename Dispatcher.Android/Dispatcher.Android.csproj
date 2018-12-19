@@ -63,6 +63,7 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Appl\AppSession.cs" />
     <Compile Include="BaseActivity.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DataUtils.cs" />
@@ -268,7 +269,6 @@
     <AndroidAsset Include="Assets\Icons\GearIconAlfa.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="CustomViews\" />
     <Folder Include="Resources\menu\" />
   </ItemGroup>
   <ItemGroup>
