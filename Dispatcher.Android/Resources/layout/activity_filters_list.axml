@@ -6,7 +6,8 @@
     android:layout_height="match_parent">
     <include layout="@layout/action_bar_common"/>
     <ListView
-        android:minWidth="25px"
+		android:listSelector="#E0E0E0"
+		android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

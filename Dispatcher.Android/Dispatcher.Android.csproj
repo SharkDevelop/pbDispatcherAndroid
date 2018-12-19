@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Appl\AppSession.cs" />
+    <Compile Include="Appl\eFilterType.cs" />
     <Compile Include="BaseActivity.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DataUtils.cs" />
