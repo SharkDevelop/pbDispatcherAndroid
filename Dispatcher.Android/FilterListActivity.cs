@@ -134,7 +134,7 @@ namespace Dispatcher.Android
                 _listView.SetItemChecked(selectedIndex, true);
         }
 
-        private async void OnListItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        private void OnListItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             if (_filterList.Count <= e.Position) return;
             
