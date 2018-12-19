@@ -30,7 +30,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:adjustViewBounds="true"
-                android:id="@+id/ivStateAlert"
+                android:id="@+id/ivMachineIcon"
             />
             <TextView
                 android:layout_width="wrap_content"
@@ -39,8 +39,8 @@
                 android:textSize="21sp"
                 android:text="MachineName"
                 android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@+id/ivStateAlert"
-                android:id="@+id/tvStateNameAlert"
+                android:layout_toRightOf="@+id/ivMachineIcon"
+                android:id="@+id/tvMachineNameAlert"
             />
             <TextView
                 android:layout_width="wrap_content"
@@ -49,9 +49,9 @@
                 android:textSize="10sp"
                 android:text="description"
                 android:layout_marginLeft="10dp"
-                android:layout_below="@+id/tvStateNameAlert"
-                android:layout_toRightOf="@+id/ivStateAlert"
-                android:id="@+id/tvStartTimeAlert"
+                android:layout_below="@+id/tvMachineNameAlert"
+                android:layout_toRightOf="@+id/ivMachineIcon"
+                android:id="@+id/tvDescriptionAlert"
             />
         </RelativeLayout>
         <!--from-->
@@ -64,7 +64,7 @@
             android:textColor="@color/colorBlack"
             android:layout_below="@id/rlServiceAlertCard"
             android:id="@+id/tvToleranceFrom"
-        />
+        />        
         <EditText
 			android:inputType="numberDecimal"
 			android:maxLength="5"
@@ -76,7 +76,17 @@
             android:singleLine="true"
             android:layout_below="@id/rlServiceAlertCard"
             android:layout_toRightOf="@+id/tvToleranceFrom"
-            android:id="@+id/ToleranceFromValue"
+            android:id="@+id/etToleranceFromValue"
+        />
+        <TextView
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/setting_item_font"
+            android:textColor="@color/colorBlack"
+            android:layout_below="@id/rlServiceAlertCard"
+            android:layout_toRightOf="@+id/etToleranceFromValue"
+            android:id="@+id/tvValueSymbolFrom"
         />
         <!--to-->
         <ImageView
@@ -109,6 +119,16 @@
             android:layout_below="@id/tvToleranceFrom"
             android:layout_toRightOf="@+id/tvToleranceFrom"
             android:id="@+id/etToValue"
+        />
+        <TextView
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/setting_item_font"
+            android:textColor="@color/colorBlack"
+            android:layout_below="@id/tvToleranceFrom"
+            android:layout_toRightOf="@+id/etToValue"
+            android:id="@+id/tvValueSymbolTo"
         />
         <!--alert_if_tolerance_break_up-->
         <TextView
