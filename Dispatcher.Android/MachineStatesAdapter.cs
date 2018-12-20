@@ -29,7 +29,7 @@ namespace Dispatcher.Android
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
             if (!(holder is MachineStateViewHolder cell) || 
-                _statesLogs.Count < position) return;
+                _statesLogs.Count <= position) return;
 
             var item = _statesLogs[position];
             

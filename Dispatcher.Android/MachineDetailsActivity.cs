@@ -23,14 +23,20 @@ namespace Dispatcher.Android
         private const float UpdateInterval = 100f;
         private TimerHolder _timerHolder;
         private byte _needDataUpdate;
+        private bool _needHistoryGraphRedraw;
         private DateTime _lastUpdateTime = DateTime.MinValue;
 
         private Machine _machine;
         private readonly List<MachineStatesLogElement> _statesLogs = new List<MachineStatesLogElement>();
+        private readonly List<HistoryPoint> _sensorHistoryList = new List<HistoryPoint>();
+        private DateTime _sensorHistoryTimeStart, _sensorHistoryTimeEnd;
 
         private RecyclerView _rvMachineStatesLog;
         private RecyclerView.LayoutManager _layoutManager;
         private MachineStatesAdapter _adapter;
+
+        private PlotView _plotView;
+        private DateTimeAxis _dateAxis;
         
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -39,6 +45,8 @@ namespace Dispatcher.Android
             _timerHolder = new TimerHolder(UpdateInterval, CheckNewData);
 
             SetContentView(Resource.Layout.activity_machine_details);
+
+            _plotView = FindViewById<PlotView>(Resource.Id.plotHistory);
             
             FindViewById<TextView>(Resource.Id.tvService)
                 .Click += (sender, args) => StartServiceRequestActivity();
@@ -48,7 +56,6 @@ namespace Dispatcher.Android
             
             InitCurrentMachine();
             InitMachineStatesLogListView();
-            InitHistoryPlot();
         }
 
         protected override void OnStart()
@@ -59,6 +66,22 @@ namespace Dispatcher.Android
                 _machine, 
                 Settings.machineStatesLogMaxElements, 
                 DataUpdateCallback);
+            
+            _lastUpdateTime = DateTime.Now;
+
+            _sensorHistoryTimeStart = DateTime.Now.AddDays(-1);
+            _sensorHistoryTimeEnd = DateTime.Now;
+            
+            InitHistoryPlot();
+            
+            if (_machine.sensors.Count != 0)
+                DataManager.SheduleGetSensorHistoryDataRequest(
+                    _machine.sensors[0], 
+                    (byte)SensorValueArrayIndexes.MainValue, 
+                    _sensorHistoryTimeStart, 
+                    _sensorHistoryTimeEnd, 
+                    Settings.sensorHistoryPointsCount, 
+                    DataUpdateCallback);
             
             _timerHolder.Start();
             FillList();
@@ -99,36 +122,46 @@ namespace Dispatcher.Android
 
         private void InitHistoryPlot()
         {
-            FindViewById<PlotView>(Resource.Id.plotHistory)
-                .Model = CreatePlotModel();
+            _plotView.Model = CreatePlotModel(_sensorHistoryTimeStart, _sensorHistoryTimeEnd);
 
-            PlotModel CreatePlotModel()
+            PlotModel CreatePlotModel(DateTime startDate, DateTime endDate)
             {
-                var plotModel = new PlotModel { Title = "OxyPlot Demo" };
-
-                plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
-                plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Maximum = 10, Minimum = 0 });
-
-                var series1 = new LineSeries
+                var plotModel = new PlotModel
                 {
-                    MarkerType = MarkerType.Circle,
-                    MarkerSize = 4,
-                    MarkerStroke = OxyColors.White
+                    PlotAreaBorderThickness = new OxyThickness(1,0,0,1),
+                    PlotAreaBorderColor = OxyColors.Transparent                    
+                };
+                
+                var minValue = DateTimeAxis.ToDouble(startDate);
+                var maxValue = DateTimeAxis.ToDouble(endDate);                
+
+                plotModel.Axes.Add(new LinearAxis
+                {
+                    Position = AxisPosition.Left,
+                    AxislineStyle = LineStyle.Solid,
+                    AxislineColor = OxyColors.Gray,
+                    AxisDistance = 1,
+                    IsZoomEnabled = false,
+                    IsPanEnabled = false
+                });
+
+                _dateAxis = new DateTimeAxis
+                {
+                    Position = AxisPosition.Bottom,
+                    AxislineStyle = LineStyle.Solid,
+                    AxislineColor = OxyColors.Gray,
+                    Minimum = minValue,
+                    Maximum = maxValue,
+                    StringFormat = "HH:mm dd.MM.yy"
                 };
 
-                series1.Points.Add(new DataPoint(0.0, 6.0));
-                series1.Points.Add(new DataPoint(1.4, 2.1));
-                series1.Points.Add(new DataPoint(2.0, 4.2));
-                series1.Points.Add(new DataPoint(3.3, 2.3));
-                series1.Points.Add(new DataPoint(4.7, 7.4));
-                series1.Points.Add(new DataPoint(6.0, 6.2));
-                series1.Points.Add(new DataPoint(8.9, 8.9));
-
-                plotModel.Series.Add(series1);
-
+                plotModel.Axes.Add(_dateAxis);
+                
                 return plotModel;
             }
         }
+
+        private readonly object _locker = new object();
         
         private void DataUpdateCallback(object requestResult)
         {
@@ -150,14 +183,17 @@ namespace Dispatcher.Android
                 _needDataUpdate++;
             }
 
-            if (requestResult is List<HistoryPoint>)
+            if (requestResult is List<HistoryPoint> list)
             {
-//                sensorHistoryList.Clear();
-//                foreach (var item in (List<HistoryPoint>)requestResult)
-//                {
-//                    sensorHistoryList.Add(item);
-//                }
-//                needHistoryGraphRedraw = true;
+                lock (_locker)
+                {
+                    _sensorHistoryList.Clear();
+                    foreach (var item in list)
+                    {
+                        _sensorHistoryList.Add(item);
+                    }
+                }
+                _needHistoryGraphRedraw = true;
             }
         }
         
@@ -170,22 +206,27 @@ namespace Dispatcher.Android
             else
                 UpdateTitle(Resource.String.no_connection);
 
-//            if ((HistoryGraph.readyToDataUpdate == true) && ((sensorHistoryTimeStart != HistoryGraph.timeStart) || (sensorHistoryTimeEnd != HistoryGraph.timeEnd)))
-//            {
-//                HistoryGraph.readyToDataUpdate = false;
-//
-//                sensorHistoryTimeStart = HistoryGraph.timeStart;
-//                sensorHistoryTimeEnd = HistoryGraph.timeEnd;
-//
-//                if (Application.selectedMachine.sensors.Count != 0)
-//                    DataManager.SheduleGetSensorHistoryDataRequest(Application.selectedMachine.sensors[0], (byte)SensorValueArrayIndexes.MainValue, sensorHistoryTimeStart, sensorHistoryTimeEnd, Settings.sensorHistoryPointsCount, DataUpdateCallback);
-//            }
-//
-//            if (needHistoryGraphRedraw == true) 
-//            {
-//                needHistoryGraphRedraw = false;
-//                HistoryGraph.SetNeedsDisplay();
-//            }
+            if (_sensorHistoryTimeStart != DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum) || 
+                _sensorHistoryTimeEnd != DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum))
+            {
+                _sensorHistoryTimeStart = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum);
+                _sensorHistoryTimeEnd = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum);
+                
+                if (_machine.sensors.Count != 0)
+                    DataManager.SheduleGetSensorHistoryDataRequest(
+                        _machine.sensors[0], 
+                        (byte)SensorValueArrayIndexes.MainValue, 
+                        _sensorHistoryTimeStart, 
+                        _sensorHistoryTimeEnd, 
+                        Settings.sensorHistoryPointsCount, 
+                        DataUpdateCallback);
+            }
+
+            if (_needHistoryGraphRedraw)
+            {
+                _needHistoryGraphRedraw = false;
+                RunOnUiThread(UpdatePlot);
+            }
 
             if (_needDataUpdate > 0)
             {
@@ -204,7 +245,31 @@ namespace Dispatcher.Android
                 _lastUpdateTime = DateTime.Now;
             }
         }
-        
+
+        private void UpdatePlot()
+        {
+            _plotView.Model.Series.Clear();
+            
+            var series = new LineSeries
+            {
+                MarkerType = MarkerType.None,
+                MarkerSize = 1,
+                Color = OxyColors.Gray
+            };
+
+            lock (_locker)
+            {
+                foreach (var point in _sensorHistoryList)
+                {
+                    series.Points
+                        .Add(new DataPoint(DateTimeAxis.ToDouble(point.time), point.value));
+                }
+            }
+
+            _plotView.Model.Series.Add(series);
+            _plotView.InvalidatePlot();
+        }
+
         private void UpdateViewValues()
         {
             RunOnUiThread(FillList);
