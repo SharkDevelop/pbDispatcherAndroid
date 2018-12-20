@@ -40,7 +40,7 @@ namespace Dispatcher.Android
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
-            FindViewById<Button>(Resource.Id.btnSettings)
+            FindViewById<TextView>(Resource.Id.btnSettings)
                 .Click += (sender, args) => StartSettingsActivity();
             
             _pingIndicator = FindViewById<ImageView>(Resource.Id.ivPing);
@@ -82,11 +82,10 @@ namespace Dispatcher.Android
         {
             if (DataManager.ConnectState == ConnectStates.AuthPassed)
             {
-                UpdateTitle(Resource.String.all);
-                if (DataManager.selectedDivision != null)
-                {
-                    UpdateTitle(DataManager.selectedDivision.name);
-                }
+                if (DataManager.selectedDivision != null)                
+                    UpdateTitle(DataManager.selectedDivision.name);                
+                else                
+                    UpdateTitle(Resource.String.all);                
 
                 if (DataManager.Ping < 200)
                     UpdatePingIndicatorImage("GreenCircle");

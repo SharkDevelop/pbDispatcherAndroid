@@ -27,6 +27,7 @@
             android:layout_below="@id/tvMachineNumberRequest"
             android:id="@+id/rlServiceRequestCard">
             <ImageView
+				android:layout_marginTop="3dp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:adjustViewBounds="true"

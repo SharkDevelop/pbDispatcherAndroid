@@ -4,12 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <ImageView
+		android:layout_gravity="center_vertical"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:adjustViewBounds="true"        
         android:id="@+id/ivFilterThumb"
     />
     <TextView
+		android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/colorBlack"

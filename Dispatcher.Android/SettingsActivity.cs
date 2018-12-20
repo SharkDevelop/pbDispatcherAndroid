@@ -50,6 +50,7 @@ namespace Dispatcher.Android
             _tvServiceState = FindViewById<TextView>(Resource.Id.tvServiceStateValue);
             _tvServiceState.Click += (sender, args) => StartFilterActivity(eFilterType.ServiceState);
             _swOnlyMy = FindViewById<Switch>(Resource.Id.swOnlyMy);
+            _swOnlyMy.CheckedChange += SwOnlyMyOnCheckedChange; 
 
             _ivFacilityType = FindViewById<ImageView>(Resource.Id.ivFacilityType);
             _ivWorkSate = FindViewById<ImageView>(Resource.Id.ivWorkSate);
@@ -59,7 +60,7 @@ namespace Dispatcher.Android
             _tvUserNameValue.Text = DataManager.UserName;
             _tvUserNameValue.Click += (sender, args) => StartUserActivity();
         }
-        
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -121,7 +122,7 @@ namespace Dispatcher.Android
                 _ivServiceState.SetImageBitmap(ResourcesHelper.GetImageFromResources(DataManager.selectedMachineServiceState.iconName));
             }
 
-            _swOnlyMy.Selected = DataManager.onlyMyMachines;
+            _swOnlyMy.Checked = DataManager.onlyMyMachines;
         }
         
         private void UpdateUserValueInUiThread()
@@ -143,6 +144,12 @@ namespace Dispatcher.Android
             intent.SetClass(BaseContext, typeof(UserSettingsActivity));
             intent.SetFlags(ActivityFlags.ReorderToFront);
             StartActivity(intent);
+        }
+        
+        private void SwOnlyMyOnCheckedChange(object sender, CompoundButton.CheckedChangeEventArgs e)
+        {
+            DataManager.onlyMyMachines = _swOnlyMy.Checked;
+            DataUtils.StoreValues();
         }
     }
 }

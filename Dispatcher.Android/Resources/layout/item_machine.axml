@@ -39,9 +39,12 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/colorBlack"
                 android:textSize="21sp"
-                android:text="Caption"
+				android:text="Caption"
+				android:ellipsize="end"
+				android:maxLines="1"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/imageView"
+				android:layout_toLeftOf="@+id/stateImageView"
                 android:id="@+id/nameTextView"
             />
             <TextView
@@ -51,9 +54,12 @@
                 android:textColor="@color/colorBlack"
                 android:textSize="10sp"
                 android:text="Description"
+				android:ellipsize="end"
+				android:maxLines="1"
                 android:layout_marginLeft="10sp"
                 android:layout_toRightOf="@+id/imageView"
                 android:layout_below="@+id/nameTextView"
+				android:layout_toLeftOf="@+id/addValueTextView"
                 android:id="@+id/descTextView"
             />
             <ImageView
@@ -76,15 +82,17 @@
                 android:textAlignment="textEnd"
                 android:id="@+id/mainValueTextView"
             />
-            <TextView
-                android:layout_width="27dp"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/colorBlack"
-                android:textSize="10sp"
-                android:text="ob/m"
-                android:layout_alignParentRight="true"
-                android:id="@+id/mainValueSymbolTextView"
+			<TextView
+				android:layout_width="27dp"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:textColor="@color/colorBlack"
+				android:textSize="10sp"
+				android:layout_marginTop="3dp" 
+				android:text="ob/m"
+				android:layout_alignParentRight="true"
+				android:id="@+id/mainValueSymbolTextView"
+				
             />
             <TextView
                 android:layout_width="60dp"

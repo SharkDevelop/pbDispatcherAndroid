@@ -143,7 +143,7 @@ namespace Dispatcher.Android
         private void CheckNewData()
         {
             if (DataManager.ConnectState == ConnectStates.AuthPassed)
-                UpdateTitle(Resource.Layout.activity_sensor_alerts);
+                UpdateTitle(Resource.String.sensor_alerts);
             else if (DataManager.ConnectState == ConnectStates.SocketConnected)
                 UpdateTitle(Resource.String.no_authorization);
             else

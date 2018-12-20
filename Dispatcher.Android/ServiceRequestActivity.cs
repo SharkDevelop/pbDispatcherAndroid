@@ -116,7 +116,7 @@ namespace Dispatcher.Android
         private void CheckNewData()
         {
             if (DataManager.ConnectState == ConnectStates.AuthPassed)
-                UpdateTitle(_machine.name);
+                UpdateTitle(Resource.String.service_intend);
             else if (DataManager.ConnectState == ConnectStates.SocketConnected)
                 UpdateTitle(Resource.String.no_authorization);
             else

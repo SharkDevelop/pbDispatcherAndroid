@@ -2513,8 +2513,8 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f080102
 			public const int addValueSymbolTextView = 2131230978;
 			
-			// aapt resource value: 0x7f080101
-			public const int addValueTextView = 2131230977;
+			// aapt resource value: 0x7f0800fe
+			public const int addValueTextView = 2131230974;
 			
 			// aapt resource value: 0x7f080070
 			public const int alertTitle = 2131230832;
@@ -2597,8 +2597,8 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f080060
 			public const int default_activity_button = 2131230816;
 			
-			// aapt resource value: 0x7f0800fd
-			public const int descTextView = 2131230973;
+			// aapt resource value: 0x7f0800ff
+			public const int descTextView = 2131230975;
 			
 			// aapt resource value: 0x7f0800ef
 			public const int design_bottom_sheet = 2131230959;
@@ -2795,11 +2795,11 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f080093
 			public const int lvFilters = 2131230867;
 			
-			// aapt resource value: 0x7f080100
-			public const int mainValueSymbolTextView = 2131230976;
+			// aapt resource value: 0x7f080101
+			public const int mainValueSymbolTextView = 2131230977;
 			
-			// aapt resource value: 0x7f0800ff
-			public const int mainValueTextView = 2131230975;
+			// aapt resource value: 0x7f080100
+			public const int mainValueTextView = 2131230976;
 			
 			// aapt resource value: 0x7f08011d
 			public const int masked = 2131231005;
@@ -2819,8 +2819,8 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f080028
 			public const int multiply = 2131230760;
 			
-			// aapt resource value: 0x7f0800fc
-			public const int nameTextView = 2131230972;
+			// aapt resource value: 0x7f0800fd
+			public const int nameTextView = 2131230973;
 			
 			// aapt resource value: 0x7f0800f2
 			public const int navigation_header_container = 2131230962;
@@ -3017,8 +3017,8 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f08004b
 			public const int start = 2131230795;
 			
-			// aapt resource value: 0x7f0800fe
-			public const int stateImageView = 2131230974;
+			// aapt resource value: 0x7f0800fc
+			public const int stateImageView = 2131230972;
 			
 			// aapt resource value: 0x7f08010d
 			public const int status_bar_latest_event_content = 2131230989;
@@ -3684,11 +3684,11 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f0b0010
 			public const int abc_toolbar_collapse_description = 2131427344;
 			
-			// aapt resource value: 0x7f0b003d
-			public const int alert_if_tolerance_break_up = 2131427389;
+			// aapt resource value: 0x7f0b003e
+			public const int alert_if_tolerance_break_up = 2131427390;
 			
-			// aapt resource value: 0x7f0b002a
-			public const int all = 2131427370;
+			// aapt resource value: 0x7f0b002b
+			public const int all = 2131427371;
 			
 			// aapt resource value: 0x7f0b0027
 			public const int app_name = 2131427367;
@@ -3696,47 +3696,47 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f0b001e
 			public const int appbar_scrolling_view_behavior = 2131427358;
 			
-			// aapt resource value: 0x7f0b0029
-			public const int back = 2131427369;
+			// aapt resource value: 0x7f0b002a
+			public const int back = 2131427370;
 			
 			// aapt resource value: 0x7f0b001f
 			public const int bottom_sheet_behavior = 2131427359;
 			
-			// aapt resource value: 0x7f0b003c
-			public const int cancel = 2131427388;
+			// aapt resource value: 0x7f0b003d
+			public const int cancel = 2131427389;
 			
 			// aapt resource value: 0x7f0b0020
 			public const int character_counter_pattern = 2131427360;
 			
-			// aapt resource value: 0x7f0b002c
-			public const int city = 2131427372;
+			// aapt resource value: 0x7f0b002d
+			public const int city = 2131427373;
+			
+			// aapt resource value: 0x7f0b0030
+			public const int facility_service = 2131427376;
 			
 			// aapt resource value: 0x7f0b002f
-			public const int facility_service = 2131427375;
+			public const int facility_type = 2131427375;
 			
-			// aapt resource value: 0x7f0b002e
-			public const int facility_type = 2131427374;
-			
-			// aapt resource value: 0x7f0b002b
-			public const int filters = 2131427371;
-			
-			// aapt resource value: 0x7f0b003e
-			public const int hour = 2131427390;
-			
-			// aapt resource value: 0x7f0b0037
-			public const int loading = 2131427383;
+			// aapt resource value: 0x7f0b002c
+			public const int filters = 2131427372;
 			
 			// aapt resource value: 0x7f0b003f
-			public const int min = 2131427391;
+			public const int hour = 2131427391;
 			
-			// aapt resource value: 0x7f0b0032
-			public const int no_authorization = 2131427378;
+			// aapt resource value: 0x7f0b0038
+			public const int loading = 2131427384;
+			
+			// aapt resource value: 0x7f0b0040
+			public const int min = 2131427392;
 			
 			// aapt resource value: 0x7f0b0033
-			public const int no_connection = 2131427379;
+			public const int no_authorization = 2131427379;
 			
-			// aapt resource value: 0x7f0b0046
-			public const int only_my = 2131427398;
+			// aapt resource value: 0x7f0b0034
+			public const int no_connection = 2131427380;
+			
+			// aapt resource value: 0x7f0b0047
+			public const int only_my = 2131427399;
 			
 			// aapt resource value: 0x7f0b0021
 			public const int password_toggle_content_description = 2131427361;
@@ -3753,29 +3753,32 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f0b0025
 			public const int path_password_strike_through = 2131427365;
 			
-			// aapt resource value: 0x7f0b0044
-			public const int refuse_to_repair = 2131427396;
+			// aapt resource value: 0x7f0b0045
+			public const int refuse_to_repair = 2131427397;
 			
-			// aapt resource value: 0x7f0b0041
-			public const int request_text = 2131427393;
+			// aapt resource value: 0x7f0b0042
+			public const int request_text = 2131427394;
 			
-			// aapt resource value: 0x7f0b003b
-			public const int save = 2131427387;
+			// aapt resource value: 0x7f0b003c
+			public const int save = 2131427388;
 			
 			// aapt resource value: 0x7f0b0011
 			public const int search_menu_title = 2131427345;
 			
-			// aapt resource value: 0x7f0b0040
-			public const int sec = 2131427392;
+			// aapt resource value: 0x7f0b0041
+			public const int sec = 2131427393;
 			
-			// aapt resource value: 0x7f0b0038
-			public const int sensor_alerts = 2131427384;
+			// aapt resource value: 0x7f0b0039
+			public const int sensor_alerts = 2131427385;
 			
-			// aapt resource value: 0x7f0b0042
-			public const int service_intend = 2131427394;
+			// aapt resource value: 0x7f0b0043
+			public const int service_intend = 2131427395;
 			
-			// aapt resource value: 0x7f0b0031
-			public const int service_state = 2131427377;
+			// aapt resource value: 0x7f0b0032
+			public const int service_state = 2131427378;
+			
+			// aapt resource value: 0x7f0b0029
+			public const int setting = 2131427369;
 			
 			// aapt resource value: 0x7f0b0028
 			public const int settings = 2131427368;
@@ -3783,41 +3786,41 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f0b0026
 			public const int status_bar_notification_info_overflow = 2131427366;
 			
-			// aapt resource value: 0x7f0b0045
-			public const int string_empty = 2131427397;
+			// aapt resource value: 0x7f0b0046
+			public const int string_empty = 2131427398;
 			
-			// aapt resource value: 0x7f0b0043
-			public const int take_for_repair = 2131427395;
-			
-			// aapt resource value: 0x7f0b0048
-			public const int title_dashboard = 2131427400;
-			
-			// aapt resource value: 0x7f0b0047
-			public const int title_home = 2131427399;
+			// aapt resource value: 0x7f0b0044
+			public const int take_for_repair = 2131427396;
 			
 			// aapt resource value: 0x7f0b0049
-			public const int title_notifications = 2131427401;
+			public const int title_dashboard = 2131427401;
+			
+			// aapt resource value: 0x7f0b0048
+			public const int title_home = 2131427400;
+			
+			// aapt resource value: 0x7f0b004a
+			public const int title_notifications = 2131427402;
+			
+			// aapt resource value: 0x7f0b003b
+			public const int to = 2131427387;
 			
 			// aapt resource value: 0x7f0b003a
-			public const int to = 2131427386;
+			public const int tolerance_from = 2131427386;
 			
-			// aapt resource value: 0x7f0b0039
-			public const int tolerance_from = 2131427385;
+			// aapt resource value: 0x7f0b002e
+			public const int unit = 2131427374;
 			
-			// aapt resource value: 0x7f0b002d
-			public const int unit = 2131427373;
-			
-			// aapt resource value: 0x7f0b0036
-			public const int updating = 2131427382;
-			
-			// aapt resource value: 0x7f0b0034
-			public const int user = 2131427380;
+			// aapt resource value: 0x7f0b0037
+			public const int updating = 2131427383;
 			
 			// aapt resource value: 0x7f0b0035
-			public const int user_title = 2131427381;
+			public const int user = 2131427381;
 			
-			// aapt resource value: 0x7f0b0030
-			public const int work_state = 2131427376;
+			// aapt resource value: 0x7f0b0036
+			public const int user_title = 2131427382;
+			
+			// aapt resource value: 0x7f0b0031
+			public const int work_state = 2131427377;
 			
 			static String()
 			{

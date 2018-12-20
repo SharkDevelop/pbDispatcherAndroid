@@ -31,15 +31,19 @@
             android:id="@+id/tvBack"
         />
         <TextView
-            android:layout_gravity="center"
+            android:gravity="center"
+			android:layout_gravity="center_vertical"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:ellipsize="end"
+			android:maxLines="1"                
+			android:layout_marginRight="10dp"
+			android:layout_marginLeft="10dp"
             android:text="Title"
             android:textColor="#333333"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginRight="50dp"
             android:id="@+id/tvActionBarTitle"
         />
     </LinearLayout>
