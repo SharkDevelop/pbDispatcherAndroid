@@ -30,6 +30,8 @@ namespace Dispatcher.Android
         {
             var view = convertView ?? 
                        _activity.LayoutInflater.Inflate (Resource.Layout.item_filter, parent, false);
+
+            if (Count <= position) return view;
             
             var item = this [position];
             view.FindViewById<TextView>(Resource.Id.tvFilterName)

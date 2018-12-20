@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -28,7 +29,9 @@ namespace Dispatcher.Android
         private MachinesAdapter _adapter;
         private ImageView _pingIndicator;
         private TextView _tvTitle;
-
+        
+        private readonly List<Machine> _machines = new List<Machine>();
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             DataUtils.Init();
@@ -47,7 +50,7 @@ namespace Dispatcher.Android
             _layoutManager = new LinearLayoutManager(this);
             _recyclerView.SetLayoutManager(_layoutManager);
 
-            _adapter = new MachinesAdapter(DataManager.machines);
+            _adapter = new MachinesAdapter(_machines);
             _recyclerView.SetAdapter(_adapter);
             _adapter.ItemClicked += StartSelectedMachineActivity;
         }
@@ -175,9 +178,13 @@ namespace Dispatcher.Android
 
         private void FillList()
         {
+            _machines.Clear();
+            _adapter.NotifyDataSetChanged();
+            
             var machines = DataManager.machines;
             if (machines.Count <= 0) return;
-
+            
+            _machines.AddRange(DataManager.machines);
             _adapter.NotifyDataSetChanged();
         }
     }
