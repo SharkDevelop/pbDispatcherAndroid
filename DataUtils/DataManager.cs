@@ -79,6 +79,7 @@ namespace DataUtils
 
             if (pbAdminFlag == false)
             {
+                SheduleGetUserSettingsRequest(null);
                 SheduleGetCommonTypesRequest(null);
                 SheduleGetDivisionsRequest(null);
             }
@@ -434,6 +435,9 @@ namespace DataUtils
             if (sensor == null)
                 return;
 
+            if (timeStart < unixEpoch)
+                return;
+
             ByteBuffer requestBuffer = new ByteBuffer();
             requestBuffer.Add((uint)sensor.ID);
             requestBuffer.Add((byte)valueArrayIndex);
@@ -503,7 +507,101 @@ namespace DataUtils
             UpdateNow();
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //Выдаются все темы сообщений пользователя
+        //Пример: DataManager.SheduleGetMessageSubjectsRequest(DataUpdateCallback);
+        static public void SheduleGetMessageSubjectsRequest(Client.RequestViewCallback requestViewCallback)
+        {
+            requestsQueue.Add(new Request(RequestTypes.GetMessageSubjects, null, ParseGetMessageSubjects, requestViewCallback));
 
+            UpdateNow();
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //Выдаются все сообщения, где пользователь Отправитель или Получатель
+        //Если subjectID != 0, то дополнительно накладывается фильтр на тему
+        //Если Message.senderID == DataManager.userSettings.userID, то пользователь - отправитель данного сообщение, иначе - получатель
+        //Пример: DataManager.SheduleGetMessagesRequest(0, DataUpdateCallback);
+        //Пример 2: DataManager.SheduleGetMessagesRequest(selectedSubjectID, DataUpdateCallback);
+        static public void SheduleGetMessagesRequest(uint subjectID, Client.RequestViewCallback requestViewCallback)
+        {
+            ByteBuffer requestBuffer = new ByteBuffer();
+            requestBuffer.Add((uint)subjectID);
+
+            requestsQueue.Add(new Request(RequestTypes.GetMessages, requestBuffer, ParseGetMessages, requestViewCallback));
+
+            UpdateNow();
+        }
+
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //Отправляется новое сообщение другому пользователю с UserID == recepientID
+        //Если subjectID == 0, то автоматически добавляется новая тема с содержанием subjectDescription, иначе subjectDescription игнорируется
+        //Пример: DataManager.SheduleSendMessageRequest(Settings.adminUserID, 0, "Фильтры", "Как использовать фильтры?", null);
+        //Пример ответа на сообщение по теме: DataManager.SheduleSendMessageRequest(Settings.adminUserID, message.subjectID, null, "Все еще непонятно", DataUpdateCallback);
+        static public void SheduleSendMessageRequest(int recepientID, uint subjectID, string subjectDescription, string text, Client.RequestViewCallback requestViewCallback)
+        {
+            ByteBuffer requestBuffer = new ByteBuffer();
+            requestBuffer.Add((int)recepientID);
+            requestBuffer.Add((uint)subjectID);
+            requestBuffer.AddShortString(subjectDescription);
+            requestBuffer.AddLongString(text);
+
+            requestsQueue.Add(new Request(RequestTypes.SendMessage, requestBuffer, ParseEmptyRequestAnswer, requestViewCallback));
+
+            UpdateNow();
+        }
+
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        static public void SheduleGetCamsRequest(Client.RequestViewCallback requestViewCallback)
+        {
+            if (machineTypes.Count == 0)
+                return;
+
+            ushort filterCityID = 0;
+            if (selectedCity != null)
+                filterCityID = (ushort)selectedCity.ID;
+
+            ushort filterDivisionID = 0;
+            if (selectedDivision != null)
+                filterDivisionID = selectedDivision.ID;
+
+            ByteBuffer requestBuffer = new ByteBuffer();
+            requestBuffer.Add((ushort)filterCityID);
+            requestBuffer.Add((ushort)filterDivisionID);
+
+            requestsQueue.Add(new Request(RequestTypes.GetCams, requestBuffer, ParseGetCams, requestViewCallback));
+
+            UpdateNow();
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        static public void SheduleGetCamImageRequest(ulong bridgeMac, byte camNum, DateTime timeFrom, DateTime timeTo, bool last, Client.RequestViewCallback requestViewCallback)
+        {
+            ByteBuffer requestBuffer = new ByteBuffer();
+            requestBuffer.AddULong6(bridgeMac);
+            requestBuffer.Add((byte)camNum);
+            requestBuffer.Add((DateTime)timeFrom.ToUniversalTime());
+            requestBuffer.Add((DateTime)timeTo.ToUniversalTime());
+            requestBuffer.Add((bool)last);
+
+            requestsQueue.Add(new Request(RequestTypes.GetCamImage, requestBuffer, ParseGetCamImage, requestViewCallback));
+
+            UpdateNow();
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        static public void SheduleSendCamQueryRequest(ulong bridgeMac, byte camNum, Client.RequestViewCallback requestViewCallback)
+        {
+            ByteBuffer requestBuffer = new ByteBuffer();
+            requestBuffer.AddULong6(bridgeMac);
+            requestBuffer.Add((byte)camNum);
+
+            requestsQueue.Add(new Request(RequestTypes.SendCamQuery, requestBuffer, ParseEmptyRequestAnswer, requestViewCallback));
+
+            UpdateNow();
+        }
 
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -529,7 +627,7 @@ namespace DataUtils
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         static public string ServerName
         {
-            get {return Client.serverName;}
+            get {return Client.servers[Client.currentServerNum].dnsName;}
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -569,7 +667,7 @@ namespace DataUtils
             if (requestType != RequestTypes.NodesList)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -675,7 +773,7 @@ namespace DataUtils
             if (requestType != RequestTypes.NodeFiltersList)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -704,7 +802,7 @@ namespace DataUtils
             if (requestType != RequestTypes.GetUserSettings)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -717,6 +815,9 @@ namespace DataUtils
             userSettings.notificationsFrom = buffer.GetTime().ToLocalTime();
             userSettings.notificationsTo   = buffer.GetTime().ToLocalTime();
             userSettings.sendNodesOfflineNotifications = buffer.GetBool();
+            userSettings.role    = (UserRoles) buffer.GetUShort();
+            userSettings.groupID = buffer.GetUShort();
+            userSettings.userID = buffer.GetInt();
 
             requestViewCallback?.Invoke(RequestStates.Completed);
         }
@@ -728,7 +829,7 @@ namespace DataUtils
             if (requestType != RequestTypes.SendNodePacket)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -747,7 +848,7 @@ namespace DataUtils
             RequestTypes requestType = (RequestTypes)buffer.GetByte();
             if (requestType == RequestTypes.Error)
             {
-                Client.Log(buffer.GetString());
+                Client.Log(buffer.GetLongString());
 
                 requestViewCallback?.Invoke(RequestStates.Failed);
                 return;
@@ -763,7 +864,7 @@ namespace DataUtils
             if (requestType != RequestTypes.NodeLog)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -797,7 +898,7 @@ namespace DataUtils
             if (requestType != RequestTypes.SendToNodePacketState)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -821,7 +922,7 @@ namespace DataUtils
             if (requestType != RequestTypes.GetNodeValues)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -858,7 +959,7 @@ namespace DataUtils
             if (requestType != RequestTypes.SendToBridgePacketState)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -883,7 +984,7 @@ namespace DataUtils
             if (requestType != RequestTypes.PacketLog)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -912,7 +1013,7 @@ namespace DataUtils
             if (requestType != RequestTypes.GetCommonTypes)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -933,6 +1034,8 @@ namespace DataUtils
                 ushort code = buffer.GetUShort();
                 machineTypes.Add (code, new MachineType ((MachineTypeCodes) code, buffer.GetShortString(), buffer.GetShortString()));
             }
+
+            machineTypes.Add((ushort) MachineTypeCodes.Cam, new MachineType(MachineTypeCodes.Cam, "Видеокамера", "Cam.png"));
 
             //Machine states
             machineStates.Clear();
@@ -998,7 +1101,7 @@ namespace DataUtils
             if (requestType != RequestTypes.GetDivisions)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -1036,7 +1139,7 @@ namespace DataUtils
             if (requestType != RequestTypes.GetMachines)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -1060,10 +1163,12 @@ namespace DataUtils
                 machine.name = buffer.GetShortString();
                 divisions.TryGetValue(buffer.GetUShort(), out machine.divisionOwner);
                 divisions.TryGetValue(buffer.GetUShort(), out machine.divisionPosition);
-                machine.order = buffer.GetUShort();
+                machine.order           = buffer.GetUShort();
                 machine.serviceStateTimeStart = buffer.GetTime().ToLocalTime();
-                machine.inventoryID = buffer.GetShortString();
-                machine.userName = buffer.GetShortString();
+                machine.inventoryID     = buffer.GetShortString();
+                machine.userName        = buffer.GetShortString();
+                machine.camBridgeMac    = buffer.GetULong6();
+                machine.camNum          = buffer.GetByte();
 
                 machine.CorrectNulls();
 
@@ -1079,7 +1184,10 @@ namespace DataUtils
                     sensor.mainValue = buffer.GetDouble();
                     sensor.additionalValue = buffer.GetDouble();
                     sensor.lastTime = buffer.GetTime().ToLocalTime();
-                    sensor.nodeID   = buffer.GetUInt3(); 
+                    sensor.nodeID   = buffer.GetUInt3();
+                    sensor.rssi = buffer.GetSByte();
+                    sensor.battery = buffer.GetByte();
+                    sensor.chipTemperature = buffer.GetSByte();
 
                     machine.sensors.Add(sensor);
                 }
@@ -1110,7 +1218,7 @@ namespace DataUtils
             if (requestType != RequestTypes.GetMachineStatesLog)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -1182,7 +1290,7 @@ namespace DataUtils
             if (requestType != RequestTypes.GetSensorHistoryData)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -1211,7 +1319,7 @@ namespace DataUtils
             if (requestType != RequestTypes.GetSensorBorders)
             {
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 else
                 {
                     Client.LogErr();
@@ -1235,68 +1343,138 @@ namespace DataUtils
             requestViewCallback?.Invoke(sensorBorders);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public static void ParseGetMessageSubjects (ByteBuffer buffer, Client.RequestViewCallback requestViewCallback)
+        {
+            RequestTypes requestType = (RequestTypes)buffer.GetByte();
+            if (requestType != RequestTypes.GetMessageSubjects)
+            {
+                if (requestType == RequestTypes.Error)
+                    Client.Log(buffer.GetLongString());
+                else
+                {
+                    Client.LogErr();
+                }
+
+                requestViewCallback?.Invoke(RequestStates.Failed);
+                return;
+            }
+
+            List<MessageSubject> messageSubjects = new List<MessageSubject>();
+
+            ushort count = buffer.GetUShort();
+
+            for (int s = 0; s < count; s++)
+            {
+                messageSubjects.Add(new MessageSubject(buffer.GetUInt(), buffer.GetShortString(), buffer.GetTime().ToLocalTime(), buffer.GetInt(), buffer.GetInt(), buffer.GetShortString(), buffer.GetShortString()));
+            }
+
+            requestViewCallback?.Invoke(messageSubjects);
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public static void ParseGetMessages(ByteBuffer buffer, Client.RequestViewCallback requestViewCallback)
+        {
+            RequestTypes requestType = (RequestTypes)buffer.GetByte();
+            if (requestType != RequestTypes.GetMessages)
+            {
+                if (requestType == RequestTypes.Error)
+                    Client.Log(buffer.GetLongString());
+                else
+                {
+                    Client.LogErr();
+                }
+
+                requestViewCallback?.Invoke(RequestStates.Failed);
+                return;
+            }
+
+            List<Message> messages = new List<Message>();
+
+            ushort count = buffer.GetUShort();
+
+            for (int s = 0; s < count; s++)
+            {
+                messages.Add(new Message(buffer.GetUInt(), buffer.GetLongString(), buffer.GetTime().ToLocalTime(), buffer.GetInt(), buffer.GetInt(), buffer.GetShortString(), buffer.GetShortString()));
+            }
+
+            requestViewCallback?.Invoke(messages);
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public static void ParseGetCams(ByteBuffer buffer, Client.RequestViewCallback requestViewCallback)
+        {
+            RequestTypes requestType = (RequestTypes)buffer.GetByte();
+            if (requestType != RequestTypes.GetCams)
+            {
+                if (requestType == RequestTypes.Error)
+                    Client.Log(buffer.GetLongString());
+                else
+                {
+                    Client.LogErr();
+                }
+
+                requestViewCallback?.Invoke(RequestStates.Failed);
+                return;
+            }
+
+            ushort count = buffer.GetUShort();
+
+            for (int s = 0; s < count; s++)
+            {
+                Machine machine = new Machine();
+                machineTypes.TryGetValue((ushort)MachineTypeCodes.Cam, out machine.type);
+
+                divisions.TryGetValue(buffer.GetUShort(), out machine.divisionOwner);
+                machine.divisionPosition = machine.divisionOwner;
+                machine.camBridgeMac = buffer.GetULong6();
+                machine.camNum = buffer.GetByte();
+                machine.name = buffer.GetShortString();
+                machine.camTime = buffer.GetTime().ToLocalTime();
+                machine.order = (ushort) (100 + machine.camNum);
+
+                machine.CorrectNulls();
+
+                machines.Add(machine);
+            }
+
+            machines.Sort(new MachineComparer());
+
+            requestViewCallback?.Invoke(machines);
+        }
 
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public static void ParseGetCamImage(ByteBuffer buffer, Client.RequestViewCallback requestViewCallback)
+        {
+            RequestTypes requestType = (RequestTypes)buffer.GetByte();
+            if (requestType != RequestTypes.GetCamImage)
+            {
+                if (requestType == RequestTypes.Error)
+                    Client.Log(buffer.GetLongString());
+                else
+                {
+                    Client.LogErr();
+                }
 
+                requestViewCallback?.Invoke(RequestStates.Failed);
+                return;
+            }
 
+            CamImage camImage = new CamImage();
+            camImage.data = new ByteBuffer();
 
-		//-----------------------------------------------------------------------------------------------------------------------------------------------
-		/*public static byte[] GetSensorFile(int sensorIndex, DateTime time, out DateTime lastTime)
-		{
-            byte[] result = null;
+            ushort count = buffer.GetUShort();
 
-			lastTime = DateTime.MinValue;
+            if (count != 0)
+            {
+                camImage.time = buffer.GetTime().ToLocalTime();
+                int len = buffer.GetInt();
+                camImage.data.AddBytes(buffer.GetBytes(len), 0, len);
+                
+            }
 
-			if (userID == 0)
-				return null;
-
-			if (ConnectToDB() == false)
-				return null;
-
-			MySqlDataReader reader = null;
-
-			try
-			{
-				int subType;
-
-				if (sensorIndex == 34)
-					subType = 0;
-				else
-					subType = 2;
-
-				string sql = "SELECT Data, Time FROM File WHERE Type = 1 AND SubType = " + subType.ToString() + " AND time <= '" + time.ToString ("yyyy-M-d  HH:mm:ss") + "' ORDER BY ID DESC LIMIT 1";
-
-				Console.WriteLine(sql);
-
-				MySqlCommand sqlcmd = new MySqlCommand(sql, sqlconn);
-				reader = sqlcmd.ExecuteReader();
-
-				if (reader.Read())
-				{
-					result = (byte[]) reader[0];
-                    lastTime = (DateTime) reader[1];
-				}
-				Console.WriteLine("result len: " + result.Length);
-
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-				status = "Error GetSelectedSensorFile(): " + ex.Message;
-			}
-
-			if (reader != null)
-				reader.Close();
-
-			sqlconn.Close();
-
-			return result;
-		}*/
-
-		//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-		public static void SendDeviceToken ()
-		{
-            //string postString = "/?deviceToken=" + DataManager.deviceToken + "&userToken=" + DataManager.userToken + "&appVersion=" + DataManager.appVersion;
-		}
+            requestViewCallback?.Invoke(camImage);
+        }
 	}
 }

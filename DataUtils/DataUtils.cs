@@ -20,6 +20,10 @@ namespace DataUtils
         public string inventoryID;
         public string userName;
 
+        public ulong camBridgeMac;
+        public byte camNum;
+        public DateTime camTime;
+
         public List<Sensor> sensors = new List<Sensor>();
 
 
@@ -168,6 +172,9 @@ namespace DataUtils
         public double additionalValue;
         public DateTime lastTime;
         public uint nodeID;
+        public sbyte rssi;
+        public byte battery;
+        public sbyte chipTemperature;
     }
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -294,7 +301,7 @@ namespace DataUtils
         CounterElectricity = 8,
         CounterWater       = 9,
 
-        Count
+        Cam                = 200
     }
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -304,6 +311,12 @@ namespace DataUtils
         {
             if ((m1.order < 100) || (m2.order < 100))
                 return m1.order == m2.order ? 0 : (m1.order < m2.order ? -1 : 1);
+
+            if ((m1.type.code == MachineTypeCodes.Cam) && (m2.type.code != MachineTypeCodes.Cam))
+                return 1;
+
+            if ((m1.type.code != MachineTypeCodes.Cam) && (m2.type.code == MachineTypeCodes.Cam))
+                return -1;
 
             if (m1.divisionOwner.city.ID != m2.divisionOwner.city.ID)
                 return m1.divisionOwner.city.ID < m2.divisionOwner.city.ID ? -1 : 1;
@@ -348,6 +361,13 @@ namespace DataUtils
     }
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public class CamImage
+    {
+        public DateTime time;
+        public ByteBuffer data = new ByteBuffer();
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public class FilterObject
     {
         public string leftTitle;
@@ -363,6 +383,55 @@ namespace DataUtils
             this.obj = obj;
         }
     }
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public struct MessageSubject
+    {
+        public uint ID;
+        public string description;
+        public DateTime time;
+        public int senderID;
+        public int recepientID;
+        public string senderName;
+        public string recepientName;
+
+        public MessageSubject(uint ID, string description, DateTime time, int senderID, int recepientID, string senderName, string recepientName)
+        {
+            this.ID = ID;
+            this.description = description;
+            this.time = time;
+            this.senderID = senderID;
+            this.recepientID = recepientID;
+            this.senderName = senderName;
+            this.recepientName = recepientName;
+        }
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public struct Message
+    {
+        public uint subjectID;
+        public string description;
+        public DateTime time;
+        public int senderID;
+        public int recepientID;
+        public string senderName;
+        public string recepientName;
+
+        public Message(uint subjectID, string description, DateTime time, int senderID, int recepientID, string senderName, string recepientName)
+        {
+            this.subjectID = subjectID;
+            this.description = description;
+            this.time = time;
+            this.senderID = senderID;
+            this.recepientID = recepientID;
+            this.senderName = senderName;
+            this.recepientName = recepientName;
+        }
+    }
+
+
+
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public class Node
@@ -605,6 +674,16 @@ namespace DataUtils
         public DateTime notificationsFrom;
         public DateTime notificationsTo;
         public bool     sendNodesOfflineNotifications;
+        public int      userID;
+        public UserRoles role;
+        public ushort   groupID;
+    }
+
+    public enum UserRoles : ushort
+    {
+        None = 0,
+        Admin = 1,
+        User = 2
     }
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -637,14 +716,18 @@ namespace DataUtils
         Log = 5,
         NodePacket = 6,
         BridgePacket = 7,
-        ReAuth = 8
+        ReAuth = 8,
+        Cam = 9
     }
 
     public enum PacketSubTypes : byte
     {
         FileStart = 1,
         FileContinue = 2,
-        FileEnd = 3
+        FileEnd = 3,
+        CamStart = 4,
+        CamContinue = 5,
+        CamEnd = 6
     }
 
     public enum ClientPacketTypes : byte
@@ -658,10 +741,10 @@ namespace DataUtils
     public enum HeaderOffsets : byte
     {
         PacketSize = 0,
-        CheckSum = 2,
-        FirstEnd = 4,
-        PacketNum = 4,
-        SecondEnd = 5
+        CheckSum = 4,
+        FirstEnd = 6,
+        PacketNum = 6,
+        SecondEnd = 7
     }
 
 
@@ -698,6 +781,12 @@ namespace DataUtils
         GetSensorBorders       = 27,
         SetSensorBorders       = 28,
         SetDeviceToken         = 29,
+        GetMessageSubjects     = 30,
+        GetMessages            = 31,
+        SendMessage            = 32,
+        GetCams                = 33,
+        GetCamImage            = 34,
+        SendCamQuery           = 35,
 
         Count
     }
@@ -732,7 +821,11 @@ namespace DataUtils
         WillRebootNotification = 11,
         ReadPacketsToNodeBufferResponse = 12,
         PortionAck = 13,
-        RegisterNodeAck = 14
+        RegisterNodeAck = 14,
+        RawUartPacketAck = 15,
+        PacketToNodeSendReport = 16,
+        GetTempResponce = 17
+            
     };
 
     public enum NodePacketTypes : byte
@@ -747,6 +840,7 @@ namespace DataUtils
         Reboot = 8,
         RebootIfCrcMatch = 9,
         SensorQuery = 10,
+        FullReset = 11,
 
         InitiateNodeRequest = 13,
         InitiateNodeResponse = 14,
@@ -783,7 +877,15 @@ namespace DataUtils
         RadioButtonPress = 58,
         RawPacket = 59,
         InstantRxReport = 60,
-        HallRotate = 61
+        HallRotate = 61,
+        IrDAQueryShortResponse = 62,
+        PulseCountShort = 63,
+        HallRotateStart = 64,
+        HallRotateContinue = 65,
+        HallRotateFinish = 66,        
+        AccelStart = 67,
+        AccelContinue = 68,
+        AccelFinish = 69
     }
 
 
@@ -809,7 +911,16 @@ namespace DataUtils
         ClearNodes,
         SendRawPacket = 19,
         SendInstantPacket = 20,
-        ResetHAP = 21
+        ResetHAP = 21,
+        SetRawUartMode = 22,
+        ResetCC1310 = 23,
+        SendRawUartPacket = 24,
+        SetRawUartTimeout = 25,
+        SendHttpReq = 26,
+        ClearCams = 27,
+        AddCam = 28,
+        GetTemp = 29
+
         
     }
 
@@ -856,6 +967,7 @@ namespace DataUtils
         Global        = 6, 
         RadioProfile  = 7,
         AlwaysSendFullJoinResponse = 8,
+        Cam           = 9,
 
         Count
     }
@@ -881,7 +993,9 @@ namespace DataUtils
         PeriodicalQueries = 16,
         IrDATiming        = 17,
         Button            = 18,
-        InitialChannelsState = 19
+        InitialChannelsState = 19,
+        SensorDataMode = 20,
+        ADCBorders = 21
     }
 
     public class ProbeName
@@ -1220,7 +1334,7 @@ namespace DataUtils
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        public void Add(string param)
+        public void AddLongString (string param)
         {
             if (param == null)
             {
@@ -1295,6 +1409,12 @@ namespace DataUtils
         {
             MaintainCapacity(4);
 
+            if (time < new DateTime(1970, 1, 1))
+            {
+                Add((uint)0);
+                return;
+            }
+
             uint unixTime = (uint)(time - new DateTime(1970, 1, 1)).TotalSeconds;
 
             Add((uint) unixTime);
@@ -1311,6 +1431,9 @@ namespace DataUtils
 
             if (_length == -1)
                 _length = source.Length;
+
+            if (source.Length < _index + _length)
+                return;
 
             MaintainCapacity(_length);
 
@@ -1448,7 +1571,7 @@ namespace DataUtils
 
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        public void Add(object param)
+        /*public void Add(object param)
         {
             if (param is System.Byte)
                 Add((byte)param);
@@ -1468,7 +1591,7 @@ namespace DataUtils
 
             if (param is System.String)
                 Add((string)param);
-        }
+        }*/
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         public void Rewrite(byte param)
@@ -1735,7 +1858,7 @@ namespace DataUtils
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        public string GetString()
+        public string GetLongString()
         {
             int strLength = GetInt();
 
@@ -1881,7 +2004,33 @@ namespace DataUtils
         }
 
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public float CalcTermocoupleTemp (float volt, float zeroTemp)
+        {
+            float[] thermoCoupleTable = {-2.243f, -1.889f, -1.527f, -1.156f, -0.778f, -0.392f, 0, 0.397f, 0.798f, 1.203f, 1.612f, 2.023f, 2.436f, 2.851f, 3.267f, 3.682f, 4.096f, 4.509f, 4.920f, 5.328f, 5.735f, 6.138f, 6.540f, 6.941f, 7.340f, 7.739f, 8.138f, 8.539f, 8.940f, 9.343f, 9.747f, 10.153f, 10.561f, 10.971f, 11.382f, 11.795f, 12.209f, 12.624f, 13.040f, 13.457f, 13.874f, 14.293f};
 
+            for (int s = 0; s < thermoCoupleTable.Length; s++)
+                thermoCoupleTable[s] *= 50;
+
+            if (volt < thermoCoupleTable[1])
+                return -999;
+
+            if (volt > thermoCoupleTable[thermoCoupleTable.Length - 1])
+                return 999;
+
+
+            float result = 0;
+            for (int s = 0; s < thermoCoupleTable.Length; s++)
+            {
+                if (thermoCoupleTable[s] > volt)
+                {
+                    result = (s * 10) - 60 - ((thermoCoupleTable[s] - volt) / (thermoCoupleTable[s] - thermoCoupleTable[s - 1]) * 10);
+                    break;
+                }
+            }
+
+            return zeroTemp + result;
+        }
 
         const int NodePacketPostfix = 9;
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1953,7 +2102,7 @@ namespace DataUtils
                         break;
 
                     case NodePacketTypes.Stats:
-                        if (length - index > 11) //full stats
+                        if (length - index > 12) //full stats
                         {
                             description += ", succes: " + GetByte() + ", failed: " + GetByte() + ", min rssi: " + GetSByte() + ", avg rssi: " + GetSByte() + ", max active ms: " + GetByte() + ", avg active ms: " + GetByte() + ", temp: " + GetSByte();
                             battRaw = GetByte();
@@ -1976,7 +2125,7 @@ namespace DataUtils
                             battRaw = GetByte();
                             batt = 2 + ((float)(battRaw << 1) / 256);
 
-                            description += ", batt on end: " + batt.ToString("F2");
+                            description += ", batt on end: " + batt.ToString("F2") + ", temp: " + GetSByte();
                         }
 
                         break;
@@ -1989,6 +2138,9 @@ namespace DataUtils
                         description += ", t: " + GetByte() + ", pulse: " + GetUInt() + ", total: " + GetUInt() + ", s: " + GetByte() + ", VLow: " + GetUShort() + ", VHigh: " + GetUShort() + ", PLow: " + GetUShort() + ", PHigh: " + GetUShort() +
                                                     ", node time: " + GetTime().ToLocalTime().ToString("dd.MM.yy HH:mm:ss");
                         break;
+                    case NodePacketTypes.PulseCountShort:
+                        description += ", t: " + GetByte() + ", pulse: " + GetUInt();
+                        break;
 
                     case NodePacketTypes.Pulse2ChannelCount:
                         description += ", ch1: " + GetUInt() + ", ch2: " + GetUInt() + ", minLowP: " + GetUShort() + ", minHighP: " + GetUShort();
@@ -1997,25 +2149,28 @@ namespace DataUtils
                     case NodePacketTypes.TermoCouple:
                         {
                             float temp = 0;
+                            float hum = 0;
 
-                            ushort[] termoCoupleTable = { 0, 359, 391, 424, 460, 498, 538, 581, 626, 672, 722, 773, 826, 882, 940, 1000, 1062, 1127, 1194, 1262, 1334, 1407, 1482, 1560, 1640, 1722, 1807, 1893, 1982, 2073, 2166, 2261, 2357, 2452, 2542, 2624, 10000 };
+                            ushort[] adc = new ushort[4];
 
-                            ushort tempRaw;
-
-                            for (int s0 = 0; s0 < 7; s0++)
+                            for (int s0 = 0; s0 < 4; s0++)
                             {
-                                tempRaw = GetUShort();
-
-                                for (int s = 0; s < termoCoupleTable.Length; s++)
-                                {
-                                    if (termoCoupleTable[s] > tempRaw)
-                                    {
-                                        temp = ((s - 1) * 10) - 40 - ((float)(termoCoupleTable[s] - tempRaw) / (float)(termoCoupleTable[s] - termoCoupleTable[s - 1]) * 10);
-                                        break;
-                                    }
-                                }
-                                description += ", tempRaw" + s0 + ": " + tempRaw + ", temp: " + temp.ToString("F0");
+                                adc[s0] = GetUShort();
                             }
+
+                            temp = GetUShort() * 165 / 65536 - 40;
+                            hum = GetByte() * 100 / 256;
+
+                            ushort VDDS = GetUShort();
+
+                            for (int s0 = 0; s0 < 4; s0++)
+                            {
+                                float termoCoupleTemp = CalcTermocoupleTemp (4300f / 4096f * (adc[s0] - VDDS / 10f), temp);
+
+                                description += ", adc" + s0 + ": " + adc[s0] + ", temp: " + termoCoupleTemp.ToString("F0");
+                            }
+
+                            description += ", temp: " + temp + ", hum: " + hum + ", vdds: " + VDDS;
 
                             break;
                         }
@@ -2037,6 +2192,14 @@ namespace DataUtils
 
                     case NodePacketTypes.Accel:
                         description += ", count: " + GetUInt() + ", motion: " + GetByte() + ", aX: " + GetSByte() + ", aY: " + GetSByte() + ", aZ: " + GetSByte();
+                        break;
+
+                    case NodePacketTypes.AccelContinue:
+                        description += ", aX: " + GetSByte() + ", aY: " + GetSByte() + ", aZ: " + GetSByte();
+                        break;
+
+                    case NodePacketTypes.AccelFinish:
+                        description += ", seconds: " + GetUInt();
                         break;
 
                     case NodePacketTypes.Error:
@@ -2066,6 +2229,10 @@ namespace DataUtils
                         description += ", pulses count: '" + GetHexString(len) + "'";
                         description += ", data: '" + GetHexString(len) + "'";
                         //                        buffer.index = buffer.length - NodePacketPostfix;
+                        break;
+
+                    case NodePacketTypes.IrDAQueryShortResponse:
+                        description += ", tariff: " + GetByte() + ", crcOk: " + GetBool() + ", data: '" + GetHexString(4) + "'";
                         break;
 
                     case NodePacketTypes.SwitcherState:
@@ -2118,6 +2285,14 @@ namespace DataUtils
 
                     case NodePacketTypes.HallRotate:
                         description += ", count: " + GetUInt();
+                        break;
+
+                    case NodePacketTypes.HallRotateContinue:
+                        description += ", rmp: " + GetUShort();
+                        break;
+
+                    case NodePacketTypes.HallRotateFinish:
+                        description += ", count: " + GetUInt() + ", seconds: " + GetUInt();
                         break;
 
                 }
@@ -2212,10 +2387,10 @@ namespace DataUtils
                         else if (nodeSettingsType == NodeSettingsTypes.Threshold)
                             description += ": L: " + GetUShort() + ", H: " + GetUShort();
                         else if (nodeSettingsType == NodeSettingsTypes.SensorPeriod)
-                            description += ": " + GetUInt();
+                            description += ", period: " + GetUInt() + ", finish: " + GetUInt();
                         else if (nodeSettingsType == NodeSettingsTypes.Accel)
                         {
-                            description += ". nX: " + GetShort() + ", nY: " + GetShort() + ", nZ: " + GetShort() + ", threshold: " + GetUShort();
+                            description += ". nX: " + GetByte() + ", nY: " + GetByte() + ", nZ: " + GetByte() + ", threshold: " + GetByte();
 
                             int initArrayLen = GetByte();
                             description += ", initArrayLen: " + initArrayLen;
@@ -2272,6 +2447,10 @@ namespace DataUtils
 
                             description += ", period: " + GetByte();
                         }
+                        else if (nodeSettingsType == NodeSettingsTypes.SensorDataMode)
+                            description += ": " + GetByte();
+                        else if (nodeSettingsType == NodeSettingsTypes.ADCBorders)
+                            description += ", adcLow: " + GetUShort() + ", adcHigh: " + GetUShort();
                         else
                             description += "data: '" + GetHexString(length - index) + "'";
 
@@ -2306,10 +2485,24 @@ namespace DataUtils
                         description += ": " + GetHexString(length - index);
                         break;
 
+                    case NodePacketTypes.NetJoinResponse: 
+                        if (length - index == 11 - 4)
+                            description += ", currFrame: " + GetUShort() + ", currentPseudoRandomValue: " + GetInt() + ", diff: " + GetSByte();
+                        else if (length - index == 18 - 4)
+                            description += ", nodeIndex: " + GetByte() + ", currFrame: " + GetUShort() + ", framesCount: " + GetUShort() + ", framePeriodMs: " + GetUShort() + ", pseudoRandomA: " + GetByte() + ", pseudoRandomB: " + GetByte() + ", currentPseudoRandomValue: " + GetInt() + ", diff: " + GetSByte();
+                        else if (length - index == 2)
+                            description += ", tryAgainTimeoutMs: " + GetUShort();
+
+
+                        break;
+
                 }
 
                 if (index != length)
-                    description += "Error len";
+                {
+                    index = 0;
+                    description += "Error len. data '" + GetHexString(length - index) + "'";
+                }
             }
             catch
             {
@@ -2373,6 +2566,10 @@ namespace DataUtils
                         description += " , page: " + GetByte() + " , len: " + GetUShort() + " , crc: " + GetUShort();
                         break;
 
+                    case BridgeCommands.ClearPacketsToNodeBuffer:
+                        description += " , nodeID: " + GetUInt3() + " , packetType: " + (NodePacketTypes)GetByte();
+                        break;
+
                     case BridgeCommands.Settings:
 
 
@@ -2431,6 +2628,16 @@ namespace DataUtils
                         {
                             description += ": " + GetByte();
                         }
+                        else if (settingsTypes == BridgeSettingsTypes.Cam)
+                        {
+                            byte count = GetByte();
+                            description += ". count: " + count;
+
+                            for (int s = 0; s < count; s++)
+                            {
+                                description += ", " + s + ". dns name: '" + GetShortString() + "', req: '" + GetShortString().Replace((char)0x0a, '§').Replace((char)0x0d, '§') + ", port: " + GetUShort() + ", period: " + GetUInt();
+                            }
+                        }
 
                         break;
 
@@ -2443,6 +2650,36 @@ namespace DataUtils
                     case BridgeCommands.SendInstantPacket:
                         description += " , max attempts: " + GetByte() + " , data: " + GetHexString(length - index);
                         break;
+
+                    case BridgeCommands.SetRawUartMode:
+                        description += " , mode: " + GetBool();
+                        break;
+
+                    case BridgeCommands.ResetCC1310:
+                        description += " , bootloader: " + GetBool();
+                        break;
+
+                    case BridgeCommands.SendRawUartPacket:
+                        description += " , data: " + GetHexString(length - index);
+                        break;
+
+                    case BridgeCommands.SendCam:
+                        description += " , num: " + GetByte();
+                        break;
+
+                    case BridgeCommands.SendHttpReq:
+                        {
+                            IPAddress ipAddr = new IPAddress((UInt32)IPAddress.NetworkToHostOrder((Int32)GetUInt()));
+
+                            description += ", ip: " + ipAddr +", port: " + GetUShort() + ", req: '" + GetShortString().Replace((char)0x0a, '§').Replace((char)0x0d, '§') + "'";
+                            break;
+                        }
+       
+
+                    case BridgeCommands.AddCam:
+                        description += ", dns name: '" + GetShortString() + "', req: '" + GetShortString().Replace((char)0x0a, '§').Replace((char)0x0d, '§') + "', port: " + GetUShort() + ", period: " + GetUInt();
+                        break;
+
                 }
 
                 if (index != length)
@@ -2534,6 +2771,26 @@ namespace DataUtils
                             description += ", ch: " + s + ", freq: " + GetUInt() + ", phy: " + GetByte();
                         }
                         break;
+
+                    case BridgePacketTypes.RawUartPacketAck:
+                        description += ", data: " + GetHexString(length - index);
+                        break;
+
+                    case BridgePacketTypes.GetTempResponce:
+                        description += ", chip temp: " + GetSByte();
+                        byte battRaw = GetByte();
+                        float batt = 2 + ((float)(battRaw << 1) / 256);
+
+                        description += ", batt: " + batt.ToString("F2");
+
+                        float temp = 0;
+                        float hum = 0;
+
+                        temp = GetUShort() * 165 / 65536 - 40;
+                        hum = GetByte() * 100 / 256;
+
+                        description += ", temp: " + temp + ", hum: " + hum;
+                        break;
                 }
 
                 if (length != index)
@@ -2589,29 +2846,58 @@ namespace DataUtils
 
 
                     case PacketTypes.File:
-
-                        PacketSubTypes subTypeByte = (PacketSubTypes)GetByte();
-
-                        subType = subTypeByte.ToString();
-
-                        if (fromServer == false)
                         {
-                            if (subTypeByte == PacketSubTypes.FileStart)
+                            PacketSubTypes subTypeByte = (PacketSubTypes)GetByte();
+
+                            subType = subTypeByte.ToString();
+
+                            if (fromServer == false)
                             {
-                                description += "fileType: " + GetByte().ToString();
-                                description += ",    fileSubType: " + GetInt().ToString();
-                                description += ",    fileName: " + GetShortString();
+                                if (subTypeByte == PacketSubTypes.FileStart)
+                                {
+                                    description += "fileType: " + GetByte().ToString();
+                                    description += ",    fileSubType: " + GetInt().ToString();
+                                    description += ",    fileName: " + GetShortString();
+                                }
                             }
+                            else
+                            {
+                                if (subTypeByte == PacketSubTypes.FileStart)
+                                    description += ",    fileName: " + GetShortString() + ", len: " + GetUInt();
+                                else if (subTypeByte == PacketSubTypes.FileEnd)
+                                {
+                                    description += ", len: " + GetUInt() + ", crc: " + GetULong() + ", cert: " + GetShortString() + ", sign: " + System.Text.Encoding.Default.GetString (GetBytesWithSize());
+
+                                    //byte[] sign = GetBytesWithSize();
+                                }
+                                else
+                                    description += ", data: " + GetHexString(length - index);
+                                    
+                            }
+
+                            description += ",    part size: " + length;
+
+                            break;
                         }
-                        else
+
+                    case PacketTypes.Cam:
                         {
-                            if (subTypeByte == PacketSubTypes.FileStart)
-                                description += ",    fileName: " + GetShortString();
+                            PacketSubTypes subTypeByte = (PacketSubTypes)GetByte();
+
+                            subType = subTypeByte.ToString();
+
+                            if (fromServer == false)
+                            {
+                                if (subTypeByte == PacketSubTypes.CamEnd)
+                                {
+                                    description += "camNum: " + GetByte() + ", size: " + GetUInt();
+                                }
+                            }
+
+                            description += ",    part size: " + length;
+
+                            break;
                         }
-
-                        description += ",    part size: " + length;
-
-                        break;
 
 
                     case PacketTypes.Log:
@@ -2649,6 +2935,12 @@ namespace DataUtils
                                 subType = bridgePacketType.ToString() + " " + (AckStages)GetByte();
 
                                 ParsePacketToNode(out description);
+                            }
+                            else if (bridgePacketType == BridgePacketTypes.PacketToNodeSendReport)
+                            {
+                                subType = "Send report";
+
+                                ParsePacketToNode(out description, false);
                             }
                             else
                                 description += ", data: " + GetHexString(length - index);

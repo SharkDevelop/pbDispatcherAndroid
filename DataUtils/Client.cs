@@ -56,7 +56,7 @@ namespace DataUtils
         private static Stopwatch time = new Stopwatch();
 
         private static int bytesRec;
-        private static ushort packetSize = 0;
+        private static int packetSize = 0;
         private static ushort packetCheckSum = 0;
         private static byte nextGetPacketNum = 0;
         private static byte nextSendPacketNum = 0;
@@ -64,7 +64,6 @@ namespace DataUtils
 
         static public uint ping = 0;
         static public DateTime lastPingTime = DateTime.MinValue;
-        static public string serverName;
         static public string userName;
         static public string login = null;
         static public string password = null;
@@ -165,7 +164,7 @@ namespace DataUtils
                 if (socketBuffer.length < (int)HeaderOffsets.FirstEnd)
                     return;
 
-                packetSize = socketBuffer.GetUShort();
+                packetSize = socketBuffer.GetInt();
                 packetCheckSum = socketBuffer.GetUShort();
                 packetStarted = true;
             }
@@ -217,6 +216,9 @@ namespace DataUtils
                 IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
 
                 socket = new Socket(ipAddr.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                Console.WriteLine("socket.ReceiveBufferSize " + socket.ReceiveBufferSize);
+                socket.ReceiveBufferSize = 3 * 1024 * 1024;
+                Console.WriteLine("socket.ReceiveBufferSize 2 " + socket.ReceiveBufferSize);
 
                 SocketAsyncEventArgs socketEventArg = new SocketAsyncEventArgs();
                 socketEventArg.RemoteEndPoint = ipEndPoint;
@@ -416,7 +418,7 @@ namespace DataUtils
             if ((requestType != RequestTypes.AuthByLogin) && (requestType != RequestTypes.AuthByToken))
             { 
                 if (requestType == RequestTypes.Error)
-                    Client.Log(buffer.GetString());
+                    Client.Log(buffer.GetLongString());
                 return;
             }
 
@@ -424,7 +426,6 @@ namespace DataUtils
 
             ushort serverVersion = buffer.GetUShort();
 
-            serverName = buffer.GetShortString();
             userName = buffer.GetShortString();
 
             if (requestType == RequestTypes.AuthByLogin)
@@ -470,7 +471,7 @@ namespace DataUtils
                 sendPacketBuffer.index = (int)HeaderOffsets.FirstEnd;
                 ushort checkSum = sendPacketBuffer.GetCRC16(sendPacketBuffer.length - sendPacketBuffer.index);
                 sendPacketBuffer.index = 0;
-                sendPacketBuffer.Rewrite((ushort)(sendPacketBuffer.length - (int)HeaderOffsets.FirstEnd));
+                sendPacketBuffer.Rewrite((int)(sendPacketBuffer.length - (int)HeaderOffsets.FirstEnd));
                 sendPacketBuffer.Rewrite(checkSum);
 
 
@@ -548,7 +549,7 @@ namespace DataUtils
             sendPacketBuffer.Add((byte)ClientPacketTypes.Log);
             sendPacketBuffer.Add((byte)logPart);
             sendPacketBuffer.Add((byte)logType);
-            sendPacketBuffer.Add(text);
+            sendPacketBuffer.AddLongString(text);
 
             SendBufferToServer();
 
