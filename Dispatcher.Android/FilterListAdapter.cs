@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Android.App;
 using Android.Views;
 using Android.Widget;
@@ -34,8 +34,19 @@ namespace Dispatcher.Android
             if (Count <= position) return view;
             
             var item = this [position];
-            view.FindViewById<TextView>(Resource.Id.tvFilterName)
-                .Text = item.Description;
+
+            var tvFilterName = view.FindViewById<TextView>(Resource.Id.tvFilterName);
+            if (position == 0)
+            {
+                item.Description = "Все";
+                tvFilterName.Gravity = GravityFlags.Center;
+            }
+            else            
+                tvFilterName.Gravity = GravityFlags.Left;
+            
+            
+            tvFilterName.Text = item.Description;
+
             view.FindViewById<ImageView>(Resource.Id.ivFilterThumb)
                 .SetImageBitmap(ResourcesHelper.GetImageFromResources(item.ImageName));
             

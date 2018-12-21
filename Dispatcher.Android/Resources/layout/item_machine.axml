@@ -59,7 +59,7 @@
                 android:layout_marginLeft="10sp"
                 android:layout_toRightOf="@+id/imageView"
                 android:layout_below="@+id/nameTextView"
-				android:layout_toLeftOf="@+id/addValueTextView"
+				android:layout_toLeftOf="@+id/stateImageView"
                 android:id="@+id/descTextView"
             />
             <ImageView

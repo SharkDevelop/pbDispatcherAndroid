@@ -34,16 +34,23 @@ namespace Dispatcher.Android
             
             _listView = FindViewById<ListView>(Resource.Id.lvFilters);
             _listView.ChoiceMode = ChoiceMode.Single;
-            _listView.ItemClick += OnListItemClick;
-        }
-        
+            _listView.ItemClick += OnListItemClick;           
+        }        
+
         protected override void OnStart()
         {
             base.OnStart();
-            
-            UpdateViewValues();
-            
+
             _timerHolder.Start();
+        }
+
+        protected override async void OnResume()
+        {
+            base.OnResume();
+
+            await Task.Delay(100);
+
+            UpdateViewValues();
         }
 
         protected override void OnStop()
@@ -59,7 +66,7 @@ namespace Dispatcher.Android
             else if (DataManager.ConnectState == ConnectStates.SocketConnected)
                 UpdateTitle(Resource.String.no_authorization);
             else
-                UpdateTitle(Resource.String.no_connection);
+                UpdateTitle(Resource.String.no_connection);            
         }
         
         private void UpdateViewValues()
@@ -123,15 +130,18 @@ namespace Dispatcher.Android
                         selectedIndex = _filterList.Count - 1;
                 }
             }
-            
+
             _listView.Adapter = new FilterListAdapter(this, _filterList.Select(f => new Filter()
             {
                 ImageName = f.iconName,
                 Description = f.mainTitle
-            }).ToList());
+            }).ToList());           
 
             if (_filterList.Count != 0)
-                _listView.SetItemChecked(selectedIndex, true);
+            {
+                _listView.RequestFocusFromTouch();
+                _listView.SetSelection(selectedIndex);               
+            }                
         }
 
         private void OnListItemClick(object sender, AdapterView.ItemClickEventArgs e)
@@ -156,8 +166,8 @@ namespace Dispatcher.Android
                 DataManager.selectedMachineServiceState = serviceState;
             
             DataUtils.StoreValues();
-            
-            OnBackPressed();
+           
+            OnBackPressed();                       
         }
     }
 }
