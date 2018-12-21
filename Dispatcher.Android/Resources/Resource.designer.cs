@@ -2645,8 +2645,8 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f0800af
 			public const int etSec = 2131230895;
 			
-			// aapt resource value: 0x7f0800a8
-			public const int etToValue = 2131230888;
+			// aapt resource value: 0x7f0800a7
+			public const int etToValue = 2131230887;
 			
 			// aapt resource value: 0x7f0800a4
 			public const int etToleranceFromValue = 2131230884;
@@ -3194,8 +3194,8 @@ namespace Dispatcher.Android
 			// aapt resource value: 0x7f080091
 			public const int tvTitle = 2131230865;
 			
-			// aapt resource value: 0x7f0800a7
-			public const int tvTo = 2131230887;
+			// aapt resource value: 0x7f0800a8
+			public const int tvTo = 2131230888;
 			
 			// aapt resource value: 0x7f0800a3
 			public const int tvToleranceFrom = 2131230883;

@@ -27,6 +27,7 @@
             android:layout_below="@id/tvMachineNumberAlert"
             android:id="@+id/rlServiceAlertCard">
             <ImageView
+				android:layout_marginTop="3dp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:adjustViewBounds="true"
@@ -56,7 +57,9 @@
         </RelativeLayout>
         <!--from-->
         <TextView
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
+			android:layout_marginLeft="15dp"
+			android:paddingTop="13dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tolerance_from"
@@ -68,11 +71,13 @@
         <EditText
 			android:inputType="numberDecimal"
 			android:maxLength="5"
-			android:gravity="right"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/back"
+			android:maxLines="1"
+			android:hint="00"			
+			android:layout_marginLeft="5dp"
+            android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
-            android:layout_width="50dp"
+            android:layout_width="70dp"
+			android:gravity="right"
             android:singleLine="true"
             android:layout_below="@id/rlServiceAlertCard"
             android:layout_toRightOf="@+id/tvToleranceFrom"
@@ -80,6 +85,7 @@
         />
         <TextView
             android:layout_marginTop="30dp"
+			android:layout_marginRight="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/setting_item_font"
@@ -90,31 +96,37 @@
         />
         <!--to-->
         <ImageView
-            android:layout_width="40dp"
+			android:layout_marginTop="15dp"
+			android:layout_width="40dp"
             android:layout_height="40dp"
             android:adjustViewBounds="true"
             android:layout_below="@id/tvToleranceFrom"
             android:id="@+id/ivSensorIcon"
         />
         <TextView
-            android:layout_marginTop="20dp"
-            android:layout_width="wrap_content"
+			android:layout_marginTop="15dp"
+			android:paddingTop="13dp"
+			android:layout_width="wrap_content"
             android:layout_height="wrap_content"			
             android:text="@string/to"
             android:textSize="@dimen/setting_item_font"
             android:textColor="@color/colorBlack"			
+			android:gravity="right"			
             android:layout_below="@id/tvToleranceFrom"
             android:layout_toRightOf="@+id/ivSensorIcon"
+			android:layout_toLeftOf="@+id/etToValue"
             android:id="@+id/tvTo"
         />
         <EditText
+			android:layout_marginTop="15dp"
 			android:inputType="numberDecimal"
 			android:maxLength="5"
+			android:maxLines="1"
+			android:hint="00"
 			android:gravity="right"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/back"
             android:layout_height="wrap_content"
-            android:layout_width="50dp"
+			android:layout_marginLeft="5dp"
+            android:layout_width="70dp"
             android:singleLine="true"
             android:layout_below="@id/tvToleranceFrom"
             android:layout_toRightOf="@+id/tvToleranceFrom"
@@ -122,6 +134,7 @@
         />
         <TextView
             android:layout_marginTop="30dp"
+			android:layout_marginRight="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/setting_item_font"
@@ -133,28 +146,32 @@
         <!--alert_if_tolerance_break_up-->
         <TextView
             android:layout_marginTop="30dp"
+			android:layout_marginLeft="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/alert_if_tolerance_break_up"
-            android:textSize="@dimen/setting_item_font"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
             android:layout_below="@id/tvTo"
             android:id="@+id/tvAlertIf"
         />
 		<EditText
+			android:layout_marginLeft="15dp"
+			android:maxLines="1"
+			android:hint="00"
 			android:inputType="number"
 			android:maxLength="2"
 			android:gravity="right"
-            android:background="@drawable/back"
             android:layout_height="wrap_content"
-            android:layout_width="40dp"
-			android:singleLine="true"
+            android:layout_width="50dp"			
             android:layout_below="@id/tvAlertIf"
             android:id="@+id/etHour"
         />
 		<TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+			android:layout_marginLeft="3dp"
+			android:paddingTop="13dp"
             android:text="@string/hour"
             android:textSize="@dimen/setting_item_font"
             android:textColor="@color/colorBlack"
@@ -163,20 +180,24 @@
             android:id="@+id/tvHour"
         />
 		<EditText
+			android:layout_marginLeft="3dp"
 			android:inputType="number"
+			android:maxLines="1"
 			android:maxLength="2"
+			android:hint="00"
 			android:gravity="right"
-            android:background="@drawable/back"
             android:layout_height="wrap_content"
-            android:layout_width="20dp"
+            android:layout_width="30dp"
 			android:singleLine="true"
             android:layout_below="@id/tvAlertIf"
 			android:layout_toRightOf="@+id/tvHour"
             android:id="@+id/etMin"
         />
 		<TextView
+			android:layout_marginLeft="3dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+			android:paddingTop="13dp"
             android:text="@string/min"
             android:textSize="@dimen/setting_item_font"
             android:textColor="@color/colorBlack"
@@ -185,20 +206,24 @@
             android:id="@+id/tvMin"
         />    
 		<EditText
+			android:layout_marginLeft="3dp"
 			android:inputType="number"
+			android:hint="00"
 			android:maxLength="2"
+			android:maxLines="1"
 			android:gravity="right"
-            android:background="@drawable/back"
             android:layout_height="wrap_content"
-            android:layout_width="20dp"
+            android:layout_width="30dp"
             android:singleLine="true"
             android:layout_below="@id/tvAlertIf"
 			android:layout_toRightOf="@+id/tvMin"
             android:id="@+id/etSec"
         />
 		<TextView
+			android:layout_marginLeft="3dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+			android:paddingTop="13dp"
             android:text="@string/sec"
             android:textSize="@dimen/setting_item_font"
             android:textColor="@color/colorBlack"
