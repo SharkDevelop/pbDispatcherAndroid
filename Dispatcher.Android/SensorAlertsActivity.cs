@@ -82,8 +82,11 @@ namespace Dispatcher.Android
                 _sensor = _machine.sensors[0];
 
             DataManager.SheduleGetSensorBordersRequest(_sensor, DataUpdateCallback);
+
             _ivSensorIcon.Visibility = ViewStates.Invisible;
-            
+
+            UpdateViewValues();
+
             _timerHolder.Start();
         }
 

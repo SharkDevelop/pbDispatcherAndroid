@@ -5,6 +5,7 @@ using System.Timers;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Views;
 using Android.Widget;
 using DataUtils;
 using Dispatcher.Android.Appl;
@@ -13,7 +14,7 @@ using Dispatcher.Android.Utils;
 
 namespace Dispatcher.Android
 {
-    [Activity(ScreenOrientation = ScreenOrientation.Portrait)]
+    [Activity(ScreenOrientation = ScreenOrientation.Portrait, WindowSoftInputMode = SoftInput.StateHidden)]
     public class ServiceRequestActivity : BaseActivity
     {
         private const float UpdateInterval = 100f;
@@ -72,6 +73,8 @@ namespace Dispatcher.Android
             UpdateViewValues();
             
             _timerHolder.Start();
+
+            
         }
         
         protected override void OnStop()

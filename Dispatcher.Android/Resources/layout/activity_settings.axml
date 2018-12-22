@@ -43,7 +43,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-				android:layout_marginLeft="35dp"
+				android:layout_marginLeft="32dp"
 				android:textStyle="bold"
                 android:textSize="@dimen/setting_item_font"
                 android:textColor="@color/colorBlue"
@@ -74,7 +74,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-				android:layout_marginLeft="35dp"
+				android:layout_marginLeft="32dp"
 				android:textStyle="bold"
                 android:textSize="@dimen/setting_item_font"
                 android:textColor="@color/colorBlue"
@@ -101,9 +101,10 @@
                 android:id="@+id/tvFacilityType"
             />
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-				android:layout_marginLeft="35dp"
+				android:layout_marginTop="5dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+				android:layout_marginLeft="32dp"
                 android:adjustViewBounds="true"
                 android:id="@+id/ivFacilityType"
             />
@@ -112,7 +113,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-				android:layout_marginLeft="5dp"
+				android:layout_marginLeft="7dp"
 				android:textStyle="bold"
                 android:textSize="@dimen/setting_item_font"
                 android:textColor="@color/colorBlue"
@@ -139,9 +140,10 @@
                 android:id="@+id/tvWorkSate"
             />
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-				android:layout_marginLeft="35dp"
+				android:layout_marginTop="5dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+				android:layout_marginLeft="32dp"
                 android:adjustViewBounds="true"
                 android:id="@+id/ivWorkSate"
             />
@@ -150,7 +152,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-				android:layout_marginLeft="5dp"
+				android:layout_marginLeft="7dp"
 				android:textStyle="bold"
                 android:textSize="@dimen/setting_item_font"
                 android:textColor="@color/colorBlue"
@@ -177,9 +179,10 @@
                 android:id="@+id/tvServiceState"
             />
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-				android:layout_marginLeft="35dp"
+				android:layout_marginTop="5dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+				android:layout_marginLeft="32dp"
                 android:adjustViewBounds="true"
                 android:id="@+id/ivServiceState"
             />
@@ -188,7 +191,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-				android:layout_marginLeft="5dp"
+				android:layout_marginLeft="7dp"
 				android:textStyle="bold"
                 android:textSize="@dimen/setting_item_font"
                 android:textColor="@color/colorBlue"
@@ -215,7 +218,7 @@
                 android:id="@+id/tvOnlyMy"
             />
             <Switch
-				android:layout_marginLeft="25dp"
+				android:layout_marginLeft="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left|center"
@@ -232,7 +235,7 @@
             android:id="@+id/llUser">
             <TextView
                 android:maxLines="2"
-                android:layout_weight=".40"
+                android:layout_weight=".45"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/setting_item_font"
@@ -241,7 +244,7 @@
                 android:id="@+id/tvUserName"
             />
             <TextView
-                android:layout_weight=".70"
+                android:layout_weight=".65"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
