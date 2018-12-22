@@ -128,8 +128,8 @@ namespace Dispatcher.Android
             {
                 var plotModel = new PlotModel
                 {
-                    PlotAreaBorderThickness = new OxyThickness(1,0,0,1),
-                    PlotAreaBorderColor = OxyColors.Transparent                    
+                    Padding = new OxyThickness(0),
+                    PlotAreaBorderColor = OxyColors.Transparent,                    
                 };
                 
                 var minValue = DateTimeAxis.ToDouble(startDate);
@@ -142,7 +142,7 @@ namespace Dispatcher.Android
                     AxislineColor = OxyColors.Gray,
                     AxisDistance = 1,
                     IsZoomEnabled = false,
-                    IsPanEnabled = false
+                    IsPanEnabled = false                    
                 });
 
                 _dateAxis = new DateTimeAxis
@@ -150,9 +150,10 @@ namespace Dispatcher.Android
                     Position = AxisPosition.Bottom,
                     AxislineStyle = LineStyle.Solid,
                     AxislineColor = OxyColors.Gray,
+                    IsZoomEnabled = false,
                     Minimum = minValue,
                     Maximum = maxValue,
-                    StringFormat = "HH:mm dd.MM.yy"
+                    StringFormat="HH:mm dd.MM.yy"
                 };
 
                 plotModel.Axes.Add(_dateAxis);
@@ -211,13 +212,16 @@ namespace Dispatcher.Android
             {
                 _sensorHistoryTimeStart = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum);
                 _sensorHistoryTimeEnd = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum);
-                
+
+                var start = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum).AddHours(-3);
+                var end = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum).AddHours(-3);
+
                 if (_machine.sensors.Count != 0)
                     DataManager.SheduleGetSensorHistoryDataRequest(
                         _machine.sensors[0], 
                         (byte)SensorValueArrayIndexes.MainValue, 
-                        _sensorHistoryTimeStart, 
-                        _sensorHistoryTimeEnd, 
+                        start, 
+                        end, 
                         Settings.sensorHistoryPointsCount, 
                         DataUpdateCallback);
             }
