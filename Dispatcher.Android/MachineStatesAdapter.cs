@@ -38,10 +38,19 @@ namespace Dispatcher.Android
                 ? item.description
                 : item.state.name;
             cell.TvStartDate.Text = item.timeStart.ToString ("dd.MM.yy  HH:mm:ss");
-            cell.TvPeriod.Text = item.timeEnd > item.timeStart 
-                ? FormatUtils.PeriodStr(item.timeStart, item.timeEnd) 
-                : null;
 
+
+            if (item.timeEnd > item.timeStart)
+            {
+                cell.TvPeriod.Text = FormatUtils.PeriodStr(item.timeStart, item.timeEnd);
+                cell.TvHourGlass.Visibility = ViewStates.Visible;
+            }
+            else
+            {
+                cell.TvPeriod.Text = null;
+                cell.TvHourGlass.Visibility = ViewStates.Invisible;
+            }
+            
             cell.TvUser.Text = item.userName;
         }
 

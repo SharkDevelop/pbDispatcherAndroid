@@ -53,10 +53,21 @@
                 android:layout_height="wrap_content"                
                 android:textColor="@color/colorBlack"
                 android:textSize="10sp"
-                android:text="time period"
-                android:layout_marginLeft="30dp"
+                android:text="@string/hourglass"
+                android:layout_marginLeft="35dp"
 				android:layout_below="@+id/tvStateName"
                 android:layout_toRightOf="@+id/tvStartTime"
+                android:id="@+id/tvHourGlass"
+            />
+			<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:textColor="@color/colorBlack"
+                android:textSize="10sp"
+                android:text="time period"
+                android:layout_marginLeft="5dp"
+				android:layout_below="@+id/tvStateName"
+                android:layout_toRightOf="@+id/tvHourGlass"
                 android:id="@+id/tvTimePeriod"
             />
 			<TextView

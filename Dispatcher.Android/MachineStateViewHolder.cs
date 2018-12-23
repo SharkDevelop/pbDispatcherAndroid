@@ -10,6 +10,7 @@ namespace Dispatcher.Android
         public ImageView IvState { get; }
         public TextView TvSateName { get; }
         public TextView TvStartDate { get; }
+        public TextView TvHourGlass { get; }
         public TextView TvPeriod { get; }
         public TextView TvUser { get; }
         
@@ -20,6 +21,7 @@ namespace Dispatcher.Android
             TvStartDate = itemView.FindViewById<TextView>(Resource.Id.tvStartTime);
             TvPeriod = itemView.FindViewById<TextView>(Resource.Id.tvTimePeriod);
             TvUser = itemView.FindViewById<TextView>(Resource.Id.tvUser);
+            TvHourGlass = itemView.FindViewById<TextView>(Resource.Id.tvHourGlass);
             
             itemView.Click += (sender, e) => listener(LayoutPosition);
         }
