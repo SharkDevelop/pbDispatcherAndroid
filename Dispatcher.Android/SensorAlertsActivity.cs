@@ -65,11 +65,11 @@ namespace Dispatcher.Android
             _tvValueSymbolFrom = FindViewById<TextView>(Resource.Id.tvValueSymbolFrom);
             _tvValueSymbolTo = FindViewById<TextView>(Resource.Id.tvValueSymbolTo);
             _etHour = FindViewById<EditText>(Resource.Id.etHour);
-            _etHour.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(2), new MinMaxInputFilter(0, 23), });
+            _etMin.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(4), new MinMaxInputFilter(0, 9999)});
             _etMin = FindViewById<EditText>(Resource.Id.etMin);
-            _etMin.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(2), new MinMaxInputFilter(0, 59), });
+            _etMin.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(2), new MinMaxInputFilter(0, 59)});
             _etSec = FindViewById<EditText>(Resource.Id.etSec);
-            _etSec.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(2), new MinMaxInputFilter(0, 59), });
+            _etSec.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(2), new MinMaxInputFilter(0, 59)});
 
             InitCurrentMachine();
         }
