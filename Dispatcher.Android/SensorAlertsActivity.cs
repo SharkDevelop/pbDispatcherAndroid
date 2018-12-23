@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content.PM;
@@ -207,10 +208,13 @@ namespace Dispatcher.Android
         
         private async void Save()
         {
-            if (double.TryParse(_etToleranceFromValue.Text.Replace(" ", "").Replace(",","."), out var value))
-                _sensorBorder.minValue = value;
-            if (double.TryParse(_etToValue.Text.Replace(" ", "").Replace(",", "."), out value))
-                _sensorBorder.maxValue = value;
+            var from = _etToleranceFromValue.Text?.Replace(" ", "");
+            var to = _etToValue.Text?.Replace(" ", "");
+
+            if (double.TryParse(from, out var min))
+                _sensorBorder.minValue = min;
+            if (double.TryParse(to, out var max))
+                _sensorBorder.maxValue = max;
 
             if (int.TryParse(_etHour.Text, out var hours) && 
                 int.TryParse(_etMin.Text, out var minutes) &&
