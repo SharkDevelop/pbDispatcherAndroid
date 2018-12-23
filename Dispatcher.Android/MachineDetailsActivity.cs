@@ -14,6 +14,7 @@ using Android.Support.V7.Widget;
 using Dispatcher.Android.Appl;
 using Dispatcher.Android.Helpers;
 using Dispatcher.Android.Utils;
+using Android.Graphics;
 
 namespace Dispatcher.Android
 {
@@ -139,7 +140,7 @@ namespace Dispatcher.Android
                 {
                     Position = AxisPosition.Left,
                     AxislineStyle = LineStyle.Solid,
-                    AxislineColor = OxyColors.Gray,
+                    AxislineColor = OxyColors.Black,
                     AxisDistance = 1,
                     IsZoomEnabled = false,
                     IsPanEnabled = false                    
@@ -149,7 +150,7 @@ namespace Dispatcher.Android
                 {
                     Position = AxisPosition.Bottom,
                     AxislineStyle = LineStyle.Solid,
-                    AxislineColor = OxyColors.Gray,
+                    AxislineColor = OxyColors.Black,
                     IsZoomEnabled = false,
                     Minimum = minValue,
                     Maximum = maxValue,
@@ -213,8 +214,10 @@ namespace Dispatcher.Android
                 _sensorHistoryTimeStart = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum);
                 _sensorHistoryTimeEnd = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum);
 
-                var start = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum).AddHours(-3);
-                var end = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum).AddHours(-3);
+                var offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalHours;
+
+                var start = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum).AddHours(-offset);
+                var end = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum).AddHours(-offset);                
 
                 if (_machine.sensors.Count != 0)
                     DataManager.SheduleGetSensorHistoryDataRequest(
@@ -258,7 +261,7 @@ namespace Dispatcher.Android
             {
                 MarkerType = MarkerType.None,
                 MarkerSize = 1,
-                Color = OxyColors.Gray
+                Color = OxyColor.Parse("#a7a7a7")
             };
 
             lock (_locker)

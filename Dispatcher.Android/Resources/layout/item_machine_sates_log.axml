@@ -49,11 +49,12 @@
                 android:id="@+id/tvStartTime"
             />
 			<TextView
+				android:layout_marginTop="1dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"                
                 android:textColor="@color/colorBlack"
-                android:textSize="10sp"
-                android:text="@string/hourglass"
+                android:textSize="8sp"
+				android:text="@string/hourglass"
                 android:layout_marginLeft="35dp"
 				android:layout_below="@+id/tvStateName"
                 android:layout_toRightOf="@+id/tvStartTime"

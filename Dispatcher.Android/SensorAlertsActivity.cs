@@ -207,9 +207,9 @@ namespace Dispatcher.Android
         
         private async void Save()
         {
-            if (double.TryParse(_etToleranceFromValue.Text.Replace(" ", ""), out var value))
+            if (double.TryParse(_etToleranceFromValue.Text.Replace(" ", "").Replace(",","."), out var value))
                 _sensorBorder.minValue = value;
-            if (double.TryParse(_etToValue.Text.Replace(" ", ""), out value))
+            if (double.TryParse(_etToValue.Text.Replace(" ", "").Replace(",", "."), out value))
                 _sensorBorder.maxValue = value;
 
             if (int.TryParse(_etHour.Text, out var hours) && 

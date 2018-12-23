@@ -18,7 +18,7 @@
   <string name="user_title">Пользователь</string>
   <string name="updating" tools:ignore="TypographyEllipsis">Обновление...</string>
   <string name="loading" tools:ignore="TypographyEllipsis">Загрузка...</string>
-  <string name="hourglass">&#x29D6;</string>
+  <string name="hourglass">&#x231B;</string>
 
   <string name="sensor_alerts">Тревоги датчика</string>
   <string name="tolerance_from">Допуск от:</string>
