@@ -188,16 +188,23 @@ namespace Dispatcher.Android
 
         private void FillList()
         {
-            if (_scrollListener.IsScrolling) return;            
+            if (_scrollListener.IsScrolling) return;
+
+            try
+            {
+                _machines.Clear();
+                _adapter.NotifyDataSetChanged();
             
-            _machines.Clear();
-            _adapter.NotifyDataSetChanged();
+                var machines = DataManager.machines;
+                if (machines.Count <= 0) return;
             
-            var machines = DataManager.machines;
-            if (machines.Count <= 0) return;
-            
-            _machines.AddRange(DataManager.machines);
-            _adapter.NotifyDataSetChanged();
+                _machines.AddRange(DataManager.machines);
+                _adapter.NotifyDataSetChanged();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

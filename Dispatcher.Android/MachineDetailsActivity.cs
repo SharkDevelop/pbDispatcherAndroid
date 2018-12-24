@@ -148,7 +148,6 @@ namespace Dispatcher.Android
                     AxislineStyle = LineStyle.Solid,
                     AxislineColor = OxyColors.Black,
                     AxisDistance = 1,
-                    IsZoomEnabled = false,
                     IsPanEnabled = false                    
                 });               
 
@@ -214,8 +213,8 @@ namespace Dispatcher.Android
             else
                 UpdateTitle(Resource.String.no_connection);
             
-            if ((_sensorHistoryTimeStart != DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum) || 
-                _sensorHistoryTimeEnd != DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum)))
+            if (_sensorHistoryTimeStart != DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum) || 
+                _sensorHistoryTimeEnd != DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum))
             {
                 _sensorHistoryTimeStart = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum);
                 _sensorHistoryTimeEnd = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Android.Graphics;
 using Android.Support.V7.Widget;
 using Android.Views;
@@ -29,55 +30,62 @@ namespace Dispatcher.Android
         
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            if (!(holder is MachineViewHolder cell) || 
-                _machines.Count <= position) return;
+            try
+            {
+                if (!(holder is MachineViewHolder cell) || 
+                    _machines.Count <= position) return;
             
-            var item = _machines[position];
+                var item = _machines[position];
 
-            cell.MachineIcon.SetImageBitmap(ResourcesHelper.GetImageFromResources(item.type.iconName));
+                cell.MachineIcon.SetImageBitmap(ResourcesHelper.GetImageFromResources(item.type.iconName));
 
-            cell.MachineStateIcon.SetImageBitmap(item.serviceState.code > MachineServiceStateCodes.Work
-               ? ResourcesHelper.GetImageFromResources(item.serviceState.iconName)
-               : ResourcesHelper.GetImageFromResources(item.state.iconName));
+                cell.MachineStateIcon.SetImageBitmap(item.serviceState.code > MachineServiceStateCodes.Work
+                    ? ResourcesHelper.GetImageFromResources(item.serviceState.iconName)
+                    : ResourcesHelper.GetImageFromResources(item.state.iconName));
 
-            cell.Title.Text = item.GetNameStr();
-            cell.Description.Text = item.GetDivisionStr();           
+                cell.Title.Text = item.GetNameStr();
+                cell.Description.Text = item.GetDivisionStr();           
 
-            if (item.sensors.Count != 0)
-            {
-                var sensor = item.sensors[0];
+                if (item.sensors.Count != 0)
+                {
+                    var sensor = item.sensors[0];
 
-                cell.SensorIconCell.SetImageBitmap(ResourcesHelper.GetImageFromResources(sensor.type.iconName));
-                cell.MainValue = sensor.mainValue.ToString("F2");
-                cell.MainValueSymbol = sensor.type.mainValueSymbol;
+                    cell.SensorIconCell.SetImageBitmap(ResourcesHelper.GetImageFromResources(sensor.type.iconName));
+                    cell.MainValue = sensor.mainValue.ToString("F2");
+                    cell.MainValueSymbol = sensor.type.mainValueSymbol;
 
-                var numberFormatInfo = new System.Globalization.CultureInfo("en-Us", false).NumberFormat;
-                numberFormatInfo.NumberGroupSeparator = " ";
-                numberFormatInfo.NumberDecimalSeparator = ",";
+                    var numberFormatInfo = new CultureInfo("en-Us", false).NumberFormat;
+                    numberFormatInfo.NumberGroupSeparator = " ";
+                    numberFormatInfo.NumberDecimalSeparator = ",";
 
-                cell.AdditionalValue = sensor.additionalValue.ToString("N", numberFormatInfo);
-                cell.AdditionalValueSymbol = sensor.type.additionalValueSymbol;
+                    cell.AdditionalValue = sensor.additionalValue.ToString("N", numberFormatInfo);
+                    cell.AdditionalValueSymbol = sensor.type.additionalValueSymbol;
+                }
+                else
+                {
+                    cell.SensorIconCell.SetImageBitmap(null);
+                    cell.MainValue = "";
+                    cell.MainValueSymbol = "";
+                    cell.AdditionalValue = "";
+                    cell.AdditionalValueSymbol = "";
+                }
+
+                cell.SetColor(Color.Black);
+
+                if (item.state.code == MachineStateCodes.Failure || item.serviceState.code == MachineServiceStateCodes.Broken)
+                    cell.SetColor(Color.Red);
+                else if (item.divisionPosition.ID != item.divisionOwner.ID && (item.divisionPosition.ID != 0))
+                    cell.SetColor(Color.Argb(128, 255, 0, 0));
+
+                if (item.sensors.Count != 0)
+                {
+                    if ((DateTime.Now - item.sensors[0].lastTime).TotalMinutes > Settings.greyOfflineMinutes)
+                        cell.SetColor(Color.Gray);
+                }
             }
-            else
+            catch (Exception e)
             {
-                cell.SensorIconCell.SetImageBitmap(null);
-                cell.MainValue = "";
-                cell.MainValueSymbol = "";
-                cell.AdditionalValue = "";
-                cell.AdditionalValueSymbol = "";
-            }
-
-            cell.SetColor(Color.Black);
-
-            if (item.state.code == MachineStateCodes.Failure || item.serviceState.code == MachineServiceStateCodes.Broken)
-                cell.SetColor(Color.Red);
-            else if (item.divisionPosition.ID != item.divisionOwner.ID && (item.divisionPosition.ID != 0))
-                cell.SetColor(Color.Argb(128, 255, 0, 0));
-
-            if (item.sensors.Count != 0)
-            {
-                if ((DateTime.Now - item.sensors[0].lastTime).TotalMinutes > Settings.greyOfflineMinutes)
-                    cell.SetColor(Color.Gray);
+                Console.WriteLine(e);
             }
         }
                
