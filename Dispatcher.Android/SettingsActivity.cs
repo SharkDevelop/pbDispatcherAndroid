@@ -59,6 +59,8 @@ namespace Dispatcher.Android
             _tvUserNameValue = FindViewById<TextView>(Resource.Id.tvUserNameValue);
             _tvUserNameValue.Text = DataManager.UserName;
             _tvUserNameValue.Click += (sender, args) => StartUserActivity();
+
+            InitDataUpdating();
         }
 
         protected override void InitDataUpdating()
@@ -90,7 +92,8 @@ namespace Dispatcher.Android
                 UpdateTitle(Resource.String.no_authorization);
             else
                 UpdateTitle(Resource.String.no_connection);
-            
+
+            UpdateViewValuesInUiThread();
             UpdateUserValueInUiThread();
         }
 
@@ -103,8 +106,7 @@ namespace Dispatcher.Android
             else
                 _tvUserNameValue.SetText(Resource.String.no_connection);
         }
-
-        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
         private void UpdateViewValues()
         {
             if (DataManager.selectedCity != null)
@@ -129,7 +131,12 @@ namespace Dispatcher.Android
 
             _swOnlyMy.Checked = DataManager.onlyMyMachines;
         }
-        
+
+        private void UpdateViewValuesInUiThread()
+        {
+            RunOnUiThread(UpdateViewValues);
+        }
+
         private void UpdateUserValueInUiThread()
         {
             RunOnUiThread(UpdateUserValue);

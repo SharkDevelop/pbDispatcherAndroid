@@ -12,7 +12,7 @@
         card_view:cardElevation="0.5dp"
         card_view:cardMaxElevation="0.5dp"
         card_view:cardUseCompatPadding="true"
-        card_view:cardCornerRadius="0dp"
+        card_view:cardCornerRadius="1dp"
         android:minWidth="25px"
         android:minHeight="25px">
         <RelativeLayout
