@@ -19,8 +19,7 @@ namespace Dispatcher.Android
     {
         private const float UpdateInterval = 100f;
         private TimerHolder _timerHolder;
-        private byte _needDataUpdate;
-
+        
         private Machine _machine;
         
         private Sensor _sensor = new Sensor();
@@ -44,7 +43,8 @@ namespace Dispatcher.Android
         {
             base.OnCreate(savedInstanceState);
             
-            _timerHolder = new TimerHolder(UpdateInterval, CheckNewData);
+            _timerHolder = new TimerHolder(UpdateInterval, UpdateConnectionStatus);
+            
             _sensorBorders = new SensorBordersList();
             _sensorBorder = new SensorBorder();
 
@@ -76,15 +76,6 @@ namespace Dispatcher.Android
             InitDataUpdating();
         }
         
-        protected override void InitDataUpdating()
-        {
-            DataManager.SheduleGetSensorBordersRequest(_sensor, DataUpdateCallback);
-            
-            UpdateViewValues();
-            
-            _timerHolder.Start();
-        }
-        
         protected override void OnStart()
         {
             base.OnStart();
@@ -95,6 +86,11 @@ namespace Dispatcher.Android
         {
             base.OnStop();
             _timerHolder.Stop();
+        }
+        
+        protected override void InitDataUpdating()
+        {
+            DataManager.SheduleGetSensorBordersRequest(_sensor, DataUpdateCallback);
         }
         
         private void InitCurrentMachine()
@@ -132,8 +128,6 @@ namespace Dispatcher.Android
                     };
                     _sensorBorders.list.Add(new SensorBorder(SensorBorderTypes.Ok, 0, 0));
                     _sensorBorder = _sensorBorders.list[0];
-
-                    _needDataUpdate++;
                 }
                 
                 return;
@@ -150,10 +144,10 @@ namespace Dispatcher.Android
                 }
             }
 
-            _needDataUpdate++;
+            UpdateViewValuesInUiThread();
         }
 
-        private void CheckNewData()
+        private void UpdateConnectionStatus()
         {
             if (DataManager.ConnectState == ConnectStates.AuthPassed)
                 UpdateTitle(Resource.String.sensor_alerts);
@@ -161,12 +155,6 @@ namespace Dispatcher.Android
                 UpdateTitle(Resource.String.no_authorization);
             else
                 UpdateTitle(Resource.String.no_connection);
-
-            if (_needDataUpdate > 0)
-            {
-                _needDataUpdate--;
-                UpdateViewValuesInUiThread();
-            }
         }
         
         private void UpdateViewValues()
