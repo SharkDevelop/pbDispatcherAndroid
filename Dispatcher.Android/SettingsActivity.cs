@@ -61,12 +61,17 @@ namespace Dispatcher.Android
             _tvUserNameValue.Click += (sender, args) => StartUserActivity();
         }
 
+        protected override void InitDataUpdating()
+        {
+            UpdateViewValues();
+            UpdateUserValue();
+            
+            _timerHolder.Start();
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
-            
-            UpdateViewValues();
-            UpdateUserValue();
             
             _timerHolder.Start();
         }

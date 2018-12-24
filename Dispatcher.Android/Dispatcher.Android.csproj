@@ -67,6 +67,7 @@
     <Compile Include="Appl\eFilterType.cs" />
     <Compile Include="BaseActivity.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="CustomScrollListener.cs" />
     <Compile Include="DataUtils.cs" />
     <Compile Include="FilterListActivity.cs" />
     <Compile Include="FilterListAdapter.cs" />

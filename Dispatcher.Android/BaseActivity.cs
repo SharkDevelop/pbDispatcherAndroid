@@ -48,5 +48,7 @@ namespace Dispatcher.Android
         {
             RunOnUiThread(() => _tvTitle.Text = title);
         }
+
+        protected abstract void InitDataUpdating();
     }
 }

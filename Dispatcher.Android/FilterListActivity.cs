@@ -34,8 +34,13 @@ namespace Dispatcher.Android
             
             _listView = FindViewById<ListView>(Resource.Id.lvFilters);
             _listView.ChoiceMode = ChoiceMode.Single;
-            _listView.ItemClick += OnListItemClick;           
-        }        
+            _listView.ItemClick += OnListItemClick;
+        }
+        
+        protected override void InitDataUpdating()
+        {
+            _timerHolder.Start();
+        }
 
         protected override void OnStart()
         {

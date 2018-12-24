@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -29,6 +30,7 @@ namespace Dispatcher.Android
         private MachinesAdapter _adapter;
         private ImageView _pingIndicator;
         private TextView _tvTitle;
+        private CustomScrollListener _scrollListener;
         
         private readonly List<Machine> _machines = new List<Machine>();
         
@@ -49,33 +51,43 @@ namespace Dispatcher.Android
             _recyclerView = FindViewById<RecyclerView>(Resource.Id.recyclerView);
             _layoutManager = new LinearLayoutManager(this);
             _recyclerView.SetLayoutManager(_layoutManager);
-
+            
             _adapter = new MachinesAdapter(_machines);
             _recyclerView.SetAdapter(_adapter);
             _adapter.ItemClicked += StartSelectedMachineActivity;
+            
+            _scrollListener = new CustomScrollListener();
+            _recyclerView.AddOnScrollListener(_scrollListener);
+
+            InitDataUpdating();
         }
 
         protected override void OnStart()
         {
-            base.OnStart();
-
-            DataManager.SheduleGetMachinesRequest(DataUpdateCallback);
-            _lastUpdateTime = DateTime.Now;
+            base.OnStart();            
 
             if (DataManager.LoginImpossible)
             {
                 StartUserActivity();
                 return;
             }
-            
+
             _timerHolder.Start();
-        }
+        }        
 
         protected override void OnStop()
         {
             base.OnStop();
             
             _timerHolder.Stop();
+        }
+
+        private void InitDataUpdating()
+        {
+            DataManager.SheduleGetMachinesRequest(DataUpdateCallback);
+            _lastUpdateTime = DateTime.Now;
+
+            _timerHolder.Start();
         }
 
         private void CheckNewData()
@@ -141,9 +153,6 @@ namespace Dispatcher.Android
         private void UpdateViewValues()
         {
              RunOnUiThread(FillList);
-
-            //todo: добавить это
-            //UIApplication.SharedApplication.ApplicationIconBadgeNumber = DataManager.problemsCount;
         }
 
         private void DataUpdateCallback(object requestState)
@@ -154,6 +163,8 @@ namespace Dispatcher.Android
         private void StartSelectedMachineActivity(int position)
         {
             if (DataManager.machines.Count <= position) return;
+
+            _timerHolder.Stop();
             
             AppSession.SelectedMachine = DataManager.machines[position];
             
@@ -177,6 +188,8 @@ namespace Dispatcher.Android
 
         private void FillList()
         {
+            if (_scrollListener.IsScrolling) return;            
+            
             _machines.Clear();
             _adapter.NotifyDataSetChanged();
             

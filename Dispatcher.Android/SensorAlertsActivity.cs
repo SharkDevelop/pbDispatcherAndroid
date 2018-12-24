@@ -73,21 +73,21 @@ namespace Dispatcher.Android
             _etSec.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(2), new MinMaxInputFilter(0, 59)});
 
             InitCurrentMachine();
+            InitDataUpdating();
+        }
+        
+        protected override void InitDataUpdating()
+        {
+            DataManager.SheduleGetSensorBordersRequest(_sensor, DataUpdateCallback);
+            
+            UpdateViewValues();
+            
+            _timerHolder.Start();
         }
         
         protected override void OnStart()
         {
             base.OnStart();
-            
-            if (_machine != null && _machine.sensors.Count != 0)
-                _sensor = _machine.sensors[0];
-
-            DataManager.SheduleGetSensorBordersRequest(_sensor, DataUpdateCallback);
-
-            _ivSensorIcon.Visibility = ViewStates.Invisible;
-
-            UpdateViewValues();
-
             _timerHolder.Start();
         }
 
@@ -109,6 +109,11 @@ namespace Dispatcher.Android
             }               
 
             _tvMachineNumber.Text = $"Инв. №: {_machine.inventoryID}{sensorsCount}";
+
+            if (_machine != null && _machine.sensors.Count != 0)
+                _sensor = _machine.sensors[0];
+
+            _ivSensorIcon.Visibility = ViewStates.Invisible;            
         }
 
         private void DataUpdateCallback(object requestResult)

@@ -87,6 +87,8 @@ namespace Dispatcher.Android
             UpdateViewValues();
         }
 
+        protected override void InitDataUpdating() { }
+
         protected override void OnStart()
         {
             base.OnStart();

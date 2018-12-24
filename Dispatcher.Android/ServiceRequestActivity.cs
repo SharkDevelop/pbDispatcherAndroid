@@ -58,12 +58,11 @@ namespace Dispatcher.Android
             _etRequest = FindViewById<EditText>(Resource.Id.etRequest);
             
             InitCurrentMachine();
+            InitDataUpdating();
         }
-
-        protected override void OnStart()
+        
+        protected override void InitDataUpdating()
         {
-            base.OnStart();
-            
             DataManager.SheduleGetMachineStatesLogRequest(
                 _machine, 
                 Settings.machineStatesLogMaxElements, 
@@ -73,8 +72,13 @@ namespace Dispatcher.Android
             UpdateViewValues();
             
             _timerHolder.Start();
+        }
 
+        protected override void OnStart()
+        {
+            base.OnStart();
             
+            _timerHolder.Start();            
         }
         
         protected override void OnStop()

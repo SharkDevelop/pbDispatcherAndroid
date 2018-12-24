@@ -14,7 +14,6 @@ using Android.Support.V7.Widget;
 using Dispatcher.Android.Appl;
 using Dispatcher.Android.Helpers;
 using Dispatcher.Android.Utils;
-using Android.Graphics;
 
 namespace Dispatcher.Android
 {
@@ -48,7 +47,7 @@ namespace Dispatcher.Android
             SetContentView(Resource.Layout.activity_machine_details);
 
             _plotView = FindViewById<PlotView>(Resource.Id.plotHistory);
-            
+                        
             FindViewById<TextView>(Resource.Id.tvService)
                 .Click += (sender, args) => StartServiceRequestActivity();
             
@@ -57,12 +56,11 @@ namespace Dispatcher.Android
             
             InitCurrentMachine();
             InitMachineStatesLogListView();
+            InitDataUpdating();
         }
-
-        protected override void OnStart()
+        
+        protected override void InitDataUpdating()
         {
-            base.OnStart();
-            
             DataManager.SheduleGetMachineStatesLogRequest(
                 _machine, 
                 Settings.machineStatesLogMaxElements, 
@@ -85,7 +83,15 @@ namespace Dispatcher.Android
                     DataUpdateCallback);
             
             _timerHolder.Start();
+            
             FillList();
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            _timerHolder.Start();
         }
 
         protected override void OnStop()
@@ -144,14 +150,13 @@ namespace Dispatcher.Android
                     AxisDistance = 1,
                     IsZoomEnabled = false,
                     IsPanEnabled = false                    
-                });
+                });               
 
                 _dateAxis = new DateTimeAxis
                 {
                     Position = AxisPosition.Bottom,
                     AxislineStyle = LineStyle.Solid,
                     AxislineColor = OxyColors.Black,
-                    IsZoomEnabled = false,
                     Minimum = minValue,
                     Maximum = maxValue,
                     StringFormat="HH:mm dd.MM.yy"
@@ -195,6 +200,7 @@ namespace Dispatcher.Android
                         _sensorHistoryList.Add(item);
                     }
                 }
+                
                 _needHistoryGraphRedraw = true;
             }
         }
@@ -207,9 +213,9 @@ namespace Dispatcher.Android
                 UpdateTitle(Resource.String.no_authorization);
             else
                 UpdateTitle(Resource.String.no_connection);
-
-            if (_sensorHistoryTimeStart != DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum) || 
-                _sensorHistoryTimeEnd != DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum))
+            
+            if ((_sensorHistoryTimeStart != DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum) || 
+                _sensorHistoryTimeEnd != DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum)))
             {
                 _sensorHistoryTimeStart = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum);
                 _sensorHistoryTimeEnd = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum);
