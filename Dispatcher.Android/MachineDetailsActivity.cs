@@ -3,10 +3,6 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Widget;
 using DataUtils;
-using OxyPlot;
-using OxyPlot.Axes;
-using OxyPlot.Series;
-using OxyPlot.Xamarin.Android;
 using System;
 using System.Collections.Generic;
 using Android.Content;
@@ -35,8 +31,7 @@ namespace Dispatcher.Android
         private RecyclerView.LayoutManager _layoutManager;
         private MachineStatesAdapter _adapter;
 
-        private HistoryGraphView _plotView;
-        private DateTimeAxis _dateAxis;
+        private HistoryGraphView _plotView;        
         
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -125,47 +120,7 @@ namespace Dispatcher.Android
             _adapter = new MachineStatesAdapter(_statesLogs);
             _rvMachineStatesLog.SetAdapter(_adapter);
             _adapter.ItemClicked += ShowSateDetails;
-        }
-
-        //private void InitHistoryPlot()
-        //{
-        //    _plotView.Model = CreatePlotModel(_sensorHistoryTimeStart, _sensorHistoryTimeEnd);
-
-        //    PlotModel CreatePlotModel(DateTime startDate, DateTime endDate)
-        //    {
-        //        var plotModel = new PlotModel
-        //        {
-        //            Padding = new OxyThickness(0),
-        //            PlotAreaBorderColor = OxyColors.Transparent,                    
-        //        };
-                
-        //        var minValue = DateTimeAxis.ToDouble(startDate);
-        //        var maxValue = DateTimeAxis.ToDouble(endDate);                
-
-        //        plotModel.Axes.Add(new LinearAxis
-        //        {
-        //            Position = AxisPosition.Left,
-        //            AxislineStyle = LineStyle.Solid,
-        //            AxislineColor = OxyColors.Black,
-        //            AxisDistance = 1,
-        //            IsPanEnabled = false                    
-        //        });               
-
-        //        _dateAxis = new DateTimeAxis
-        //        {
-        //            Position = AxisPosition.Bottom,
-        //            AxislineStyle = LineStyle.Solid,
-        //            AxislineColor = OxyColors.Black,
-        //            Minimum = minValue,
-        //            Maximum = maxValue,
-        //            StringFormat="HH:mm dd.MM.yy"
-        //        };
-
-        //        plotModel.Axes.Add(_dateAxis);
-                
-        //        return plotModel;
-        //    }
-        //}
+        }       
 
         private readonly object _locker = new object();
         
@@ -254,31 +209,7 @@ namespace Dispatcher.Android
 
                 _lastUpdateTime = DateTime.Now;
             }
-        }
-
-        //private void UpdatePlot()
-        //{
-        //    _plotView.Model.Series.Clear();
-            
-        //    var series = new LineSeries
-        //    {
-        //        MarkerType = MarkerType.None,
-        //        MarkerSize = 1,
-        //        Color = OxyColor.Parse("#a7a7a7")
-        //    };
-
-        //    lock (_locker)
-        //    {
-        //        foreach (var point in _sensorHistoryList)
-        //        {
-        //            series.Points
-        //                .Add(new DataPoint(DateTimeAxis.ToDouble(point.time), point.value));
-        //        }
-        //    }
-
-        //    _plotView.Model.Series.Add(series);
-        //    _plotView.InvalidatePlot();
-        //}
+        }     
 
         private void UpdateViewValues()
         {

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
+using Android.Text;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -17,13 +17,27 @@ namespace Dispatcher.Android
 {
     public class HistoryGraphView : View
     {
-        const float leftBorder = 30;
-        const float rightBorder = 10;
-        const float downBorder = 40;
+        private class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener
+        {
+            public float Scale { get; set; } = 1;
+
+            public override bool OnScale(ScaleGestureDetector detector)
+            {
+                Scale *= detector.ScaleFactor;                    
+                return true;
+            }
+        }
+
+        float leftBorder;
+        float rightBorder;
+        float downBorder;
 
         private List<HistoryPoint> historyList;
         public DateTime timeStart, timeEnd;
         public bool readyToDataUpdate = false;
+
+        private ScaleGestureDetector _scaleDetector;
+        private ScaleListener _scaleListener;
 
         public HistoryGraphView(Context context, IAttributeSet attrs) :
             base(context, attrs)
@@ -39,6 +53,65 @@ namespace Dispatcher.Android
 
         private void Initialize()
         {
+            _scaleListener = new ScaleListener();
+            _scaleDetector = new ScaleGestureDetector(Context, _scaleListener);
+
+            leftBorder = ConvertSize(30);
+            rightBorder = ConvertSize(10);
+            downBorder = ConvertSize(40);
+        }
+
+        private float lastTouchX;
+        private float currentTouchX;       
+
+        DateTime initialPanTimeStart;
+        DateTime initialPinchTimeStart, initialPinchTimeEnd;
+
+        double relativePos;
+
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            _scaleDetector.OnTouchEvent(e);
+
+            switch (e.Action & MotionEventActions.Mask)
+            {
+                case MotionEventActions.Down:
+                    readyToDataUpdate = false;
+                    initialPanTimeStart = timeStart;
+                    initialPinchTimeStart = timeStart;
+                    initialPinchTimeEnd = timeEnd;
+                    lastTouchX = e.GetX();
+                    relativePos = e.GetX() / Width;
+                    currentTouchX = 0;
+                    _scaleListener.Scale = 1;                    
+                    break;
+                case MotionEventActions.Move:
+                    if (!_scaleDetector.IsInProgress)
+                        currentTouchX = e.GetX();
+                    else
+                        currentTouchX = 0;
+                    break;
+                case MotionEventActions.Up:
+                    if (currentTouchX != 0)
+                    {
+                        double relativeX = (currentTouchX - lastTouchX) / Width;
+                        double frame = (timeEnd - timeStart).TotalSeconds;
+                        timeStart = initialPanTimeStart.AddSeconds(-frame * relativeX);
+                        timeEnd = timeStart.AddSeconds(frame);
+                    }
+                    else
+                    {
+                        double oldFrame = (initialPinchTimeEnd - initialPinchTimeStart).TotalSeconds;
+                        double newFrame = oldFrame / _scaleListener.Scale;
+                        timeStart = initialPinchTimeStart.AddSeconds((oldFrame - newFrame) * relativePos);
+                        timeEnd = timeStart.AddSeconds(newFrame);
+                    }                    
+                    readyToDataUpdate = true;
+                    PostInvalidate();
+                    break;
+            }
+
+            return true;
         }
 
         public void SetData(List<HistoryPoint> historyList, DateTime timeStart, DateTime timeEnd)
@@ -51,6 +124,12 @@ namespace Dispatcher.Android
         double initialMinValue = double.MaxValue;
         double initialMaxValue = double.MinValue;
 
+        private float ConvertSize(float size)
+        {
+            float scaledSizeInPixels = size * Resources.DisplayMetrics.ScaledDensity;
+            return scaledSizeInPixels;
+        }
+
         protected override void OnDraw(Canvas canvas)
         {
             base.OnDraw(canvas);
@@ -58,10 +137,10 @@ namespace Dispatcher.Android
             var paint = new Paint
             {
                 Color = Color.Black,
-                StrokeWidth = 1                
+                StrokeWidth = ConvertSize(1)                
             };
 
-            paint.SetStyle(Paint.Style.Stroke);
+            paint.SetStyle(Paint.Style.Stroke);            
 
             var path = new Path();
 
@@ -69,29 +148,35 @@ namespace Dispatcher.Android
             float height = Height - downBorder;
 
             path.Reset();
-            path.MoveTo(leftBorder - 3, 3);
+            path.MoveTo(leftBorder - ConvertSize(3), ConvertSize(3));
             path.LineTo(leftBorder, 0);
-            path.LineTo(leftBorder + 3, 3);            
+            path.LineTo(leftBorder + ConvertSize(3), ConvertSize(3));            
             path.MoveTo(leftBorder, 0);
-            path.LineTo(leftBorder, height + 2);
-            path.LineTo(leftBorder + width + rightBorder / 2, height + 2);
-            path.LineTo(leftBorder + width + rightBorder / 2 - 3, height + 2 - 3);
-            path.LineTo(leftBorder + width + rightBorder / 2, height + 2);
-            path.LineTo(leftBorder + width + rightBorder / 2 - 3, height + 2 + 3);
+            path.LineTo(leftBorder, height + ConvertSize(2));
+            path.LineTo(leftBorder + width + rightBorder / 2, height + ConvertSize(2));
+            path.LineTo(leftBorder + width + rightBorder / 2 - ConvertSize(3), height + ConvertSize(2) - ConvertSize(3));
+            path.LineTo(leftBorder + width + rightBorder / 2, height + ConvertSize(2));
+            path.LineTo(leftBorder + width + rightBorder / 2 - ConvertSize(3), height + ConvertSize(2) + ConvertSize(3));
 
             canvas.DrawPath(path, paint);
+
+            var topLinePaint = new TextPaint(PaintFlags.AntiAlias) { Color = Color.Black, TextSize = ConvertSize(12) };
+            var bottomLinePaint = new TextPaint(PaintFlags.AntiAlias) { Color = Color.Black, TextSize = ConvertSize(7) };
+
+            float topShift1 = 17;
+            float topShift2 = 29;
             
-            canvas.DrawText(timeStart.ToString("HH:mm"), leftBorder, height + 15, new Paint() { Color = Color.Black, TextSize = 12 });
-            canvas.DrawText(timeStart.ToString("dd.MM.yy"), leftBorder, height + 27, new Paint() { Color = Color.Black, TextSize = 7 });
-            canvas.DrawText(timeEnd.ToString("HH:mm"), leftBorder + width - 25, height + 15, new Paint() { Color = Color.Black, TextSize = 12 });
-            canvas.DrawText(timeEnd.ToString("dd.MM.yy"), leftBorder + width - 25, height + 27, new Paint() { Color = Color.Black, TextSize = 7 });
+            canvas.DrawText(timeStart.ToString("HH:mm"), leftBorder, height + ConvertSize(topShift1), topLinePaint);
+            canvas.DrawText(timeStart.ToString("dd.MM.yy"), leftBorder, height + ConvertSize(topShift2), bottomLinePaint);
+            canvas.DrawText(timeEnd.ToString("HH:mm"), leftBorder + width - ConvertSize(25), height + ConvertSize(topShift1), topLinePaint);
+            canvas.DrawText(timeEnd.ToString("dd.MM.yy"), leftBorder + width - ConvertSize(25), height + ConvertSize(topShift2), bottomLinePaint);
 
             if (historyList == null || !historyList.Any()) return;
 
             var graphPaint = new Paint
             {
                 Color = Color.Gray,
-                StrokeWidth = 2
+                StrokeWidth = ConvertSize(2)
             };
 
             graphPaint.SetStyle(Paint.Style.Stroke);
@@ -117,18 +202,24 @@ namespace Dispatcher.Android
 
             int pointX = 0;
 
+            bool needToMove = true;
+
             for (int s = 0; s < historyList.Count; s++)
             {
-                if ((historyList[s].time < timeStart) || (historyList[s].time > timeEnd))
+                if ((historyList[s].time < timeStart) || 
+                    (historyList[s].time > timeEnd))
                     continue;
 
                 float X = leftBorder + (historyList[s].time - timeStart).Ticks / period * width;
                 float Y = (float)(height + 2 - ((historyList[s].value - minValue) / valueRange * height));
 
-                if (pointX == (int)width) break;
+                if (pointX == (int)width) break;               
 
-                if (s == 0)
+                if (needToMove)
+                {
                     path.MoveTo(X, Y);
+                    needToMove = false;
+                }                    
                 else
                     path.LineTo(X, Y);
 
@@ -138,26 +229,26 @@ namespace Dispatcher.Android
             canvas.DrawPath(path, graphPaint);
 
             // X axis
-            DateTime quartDate = timeStart + new TimeSpan(((timeEnd - timeStart).Ticks / 4));
-            DateTime mediumDate = timeStart + new TimeSpan(((timeEnd - timeStart).Ticks / 2));
+            DateTime quartDate = timeStart + new TimeSpan((timeEnd - timeStart).Ticks / 4);
+            DateTime mediumDate = timeStart + new TimeSpan((timeEnd - timeStart).Ticks / 2);
             DateTime threeQuartDate = timeStart + new TimeSpan(((timeEnd - timeStart).Ticks * 3 / 4));
 
-            canvas.DrawText(quartDate.ToString("HH:mm"), leftBorder + width / 4 - 15, height + 15, new Paint() { Color = Color.Black, TextSize = 12 });
-            canvas.DrawText(quartDate.ToString("dd.MM.yy"), leftBorder + width / 4 - 15, height + 27, new Paint() { Color = Color.Black, TextSize = 7 });
-            canvas.DrawText(mediumDate.ToString("HH:mm"), leftBorder + width / 2 - 15, height + 15, new Paint() { Color = Color.Black, TextSize = 12 });
-            canvas.DrawText(mediumDate.ToString("dd.MM.yy"), leftBorder + width / 2 - 15, height + 27, new Paint() { Color = Color.Black, TextSize = 7 });
-            canvas.DrawText(threeQuartDate.ToString("HH:mm"), leftBorder + width * 3 / 4 - 15, height + 15, new Paint() { Color = Color.Black, TextSize = 12 });
-            canvas.DrawText(threeQuartDate.ToString("dd.MM.yy"), leftBorder + width * 3 / 4 - 15, height + 27, new Paint() { Color = Color.Black, TextSize = 7 });
+            canvas.DrawText(quartDate.ToString("HH:mm"), leftBorder + width / 4 - ConvertSize(15), height + ConvertSize(topShift1), topLinePaint);
+            canvas.DrawText(quartDate.ToString("dd.MM.yy"), leftBorder + width / 4 - ConvertSize(15), height + ConvertSize(topShift2), bottomLinePaint);
+            canvas.DrawText(mediumDate.ToString("HH:mm"), leftBorder + width / 2 - ConvertSize(15), height + ConvertSize(topShift1), topLinePaint);
+            canvas.DrawText(mediumDate.ToString("dd.MM.yy"), leftBorder + width / 2 - ConvertSize(15), height + ConvertSize(topShift2), bottomLinePaint);
+            canvas.DrawText(threeQuartDate.ToString("HH:mm"), leftBorder + width * 3 / 4 - ConvertSize(15), height + ConvertSize(topShift1), topLinePaint);
+            canvas.DrawText(threeQuartDate.ToString("dd.MM.yy"), leftBorder + width * 3 / 4 - ConvertSize(15), height + ConvertSize(topShift2), bottomLinePaint);
 
             path.Reset();
-            path.MoveTo(leftBorder + width / 4, height + 2 - 3);
-            path.LineTo(leftBorder + width / 4, height + 2 + 3);
+            path.MoveTo(leftBorder + width / 4, height + ConvertSize(2) - ConvertSize(3));
+            path.LineTo(leftBorder + width / 4, height + ConvertSize(2) + ConvertSize(3));
 
-            path.MoveTo(leftBorder + width / 2, height + 2 - 3);
-            path.LineTo(leftBorder + width / 2, height + 2 + 3);
+            path.MoveTo(leftBorder + width / 2, height + ConvertSize(2) - ConvertSize(3));
+            path.LineTo(leftBorder + width / 2, height + ConvertSize(2) + ConvertSize(3));
 
-            path.MoveTo(leftBorder + width * 3 / 4, height + 2 - 3);
-            path.LineTo(leftBorder + width * 3 / 4, height + 2 + 3);
+            path.MoveTo(leftBorder + width * 3 / 4, height + ConvertSize(2) - ConvertSize(3));
+            path.LineTo(leftBorder + width * 3 / 4, height + ConvertSize(2) + ConvertSize(3));
 
             canvas.DrawPath(path, paint);
 
@@ -167,21 +258,23 @@ namespace Dispatcher.Android
             double mediumValue = minValue + ((maxValue - minValue) / 2);
             double threeQuartValue = minValue + ((maxValue - minValue) * 3 / 4);
 
-            canvas.DrawText(minValue.ToString("F1"), 2, height, new Paint() { Color = Color.Black, TextSize = 11 });
-            canvas.DrawText(quartValue.ToString("F1"), 2, height + 6 - height / 4, new Paint() { Color = Color.Black, TextSize = 11 });
-            canvas.DrawText(mediumValue.ToString("F1"), 2, height + 6 - height / 2, new Paint() { Color = Color.Black, TextSize = 11 });
-            canvas.DrawText(threeQuartValue.ToString("F1"), 2, height + 6 - height * 3 / 4, new Paint() { Color = Color.Black, TextSize = 11 });
-            canvas.DrawText(maxValue.ToString("F1"), 2, 12, new Paint() { Color = Color.Black, TextSize = 11 });
+            var yPaint = new TextPaint(PaintFlags.AntiAlias) { Color = Color.Black, TextSize = ConvertSize(11) };
+
+            canvas.DrawText(minValue.ToString("F1"), 2, height, yPaint);
+            canvas.DrawText(quartValue.ToString("F1"), 2, height + ConvertSize(6) - height / 4, yPaint);
+            canvas.DrawText(mediumValue.ToString("F1"), 2, height + ConvertSize(6) - height / 2, yPaint);
+            canvas.DrawText(threeQuartValue.ToString("F1"), 2, height + ConvertSize(6) - height * 3 / 4, yPaint);
+            canvas.DrawText(maxValue.ToString("F1"), 2, ConvertSize(12), yPaint);
 
             path.Reset();
-            path.MoveTo(leftBorder - 3, height + 2 - height / 4);
-            path.LineTo(leftBorder + 3, height + 2 - height / 4);
+            path.MoveTo(leftBorder - ConvertSize(3), height + ConvertSize(2) - height / 4);
+            path.LineTo(leftBorder + ConvertSize(3), height + ConvertSize(2) - height / 4);
 
-            path.MoveTo(leftBorder - 3, height + 2 - height / 2);
-            path.LineTo(leftBorder + 3, height + 2 - height / 2);
+            path.MoveTo(leftBorder - ConvertSize(3), height + ConvertSize(2) - height / 2);
+            path.LineTo(leftBorder + ConvertSize(3), height + ConvertSize(2) - height / 2);
 
-            path.MoveTo(leftBorder - 3, height + 2 - height * 3 / 4);
-            path.LineTo(leftBorder + 3, height + 2 - height * 3 / 4);
+            path.MoveTo(leftBorder - ConvertSize(3), height + ConvertSize(2) - height * 3 / 4);
+            path.LineTo(leftBorder + ConvertSize(3), height + ConvertSize(2) - height * 3 / 4);
 
             canvas.DrawPath(path, paint);
         }
