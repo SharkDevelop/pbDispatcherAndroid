@@ -122,8 +122,6 @@ namespace Dispatcher.Android
             _adapter.ItemClicked += ShowSateDetails;
         }       
 
-        private readonly object _locker = new object();
-        
         private void DataUpdateCallback(object requestResult)
         {
             if (requestResult is List<MachineStatesLogElement> stateList)
@@ -146,15 +144,12 @@ namespace Dispatcher.Android
 
             if (requestResult is List<HistoryPoint> list)
             {
-                lock (_locker)
+                _sensorHistoryList.Clear();
+                foreach (var item in list)
                 {
-                    _sensorHistoryList.Clear();
-                    foreach (var item in list)
-                    {
-                        _sensorHistoryList.Add(item);
-                    }
+                    _sensorHistoryList.Add(item);
                 }
-                
+
                 _needHistoryGraphRedraw = true;
             }
         }
@@ -168,7 +163,7 @@ namespace Dispatcher.Android
             else
                 UpdateTitle(Resource.String.no_connection);
 
-            if ((_plotView.readyToDataUpdate == true) && 
+            if (_plotView.readyToDataUpdate && 
                 ((_sensorHistoryTimeStart != _plotView.timeStart) || 
                 (_sensorHistoryTimeEnd != _plotView.timeEnd)))
             {
@@ -187,7 +182,7 @@ namespace Dispatcher.Android
                         DataUpdateCallback);
             }
 
-            if (_needHistoryGraphRedraw == true)
+            if (_needHistoryGraphRedraw)
             {
                 _needHistoryGraphRedraw = false;
                 _plotView.PostInvalidate();

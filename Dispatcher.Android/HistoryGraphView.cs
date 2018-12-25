@@ -101,11 +101,10 @@ namespace Dispatcher.Android
                         timeStart = initialPinchTimeStart.AddSeconds((oldFrame - newFrame) * relativePos);
                         timeEnd = timeStart.AddSeconds(newFrame);                        
                     }
-                    PostInvalidate();
+                    Invalidate();
                     break;
                 case MotionEventActions.Up:                                        
-                    readyToDataUpdate = true;
-                    PostInvalidate();
+                    readyToDataUpdate = true;                    
                     break;
             }
 
