@@ -256,13 +256,20 @@ namespace Dispatcher.Android
             double mediumValue = minValue + ((maxValue - minValue) / 2);
             double threeQuartValue = minValue + ((maxValue - minValue) * 3 / 4);
 
-            var yPaint = new TextPaint(PaintFlags.AntiAlias) { Color = Color.Black, TextSize = ConvertSize(11) };
+            var yPaint = new TextPaint(PaintFlags.AntiAlias)
+            {
+                Color = Color.Black,
+                TextSize = ConvertSize(11),
+                TextAlign = Paint.Align.Right
+            };
 
-            canvas.DrawText(minValue.ToString("F1"), 2, height, yPaint);
-            canvas.DrawText(quartValue.ToString("F1"), 2, height + ConvertSize(6) - height / 4, yPaint);
-            canvas.DrawText(mediumValue.ToString("F1"), 2, height + ConvertSize(6) - height / 2, yPaint);
-            canvas.DrawText(threeQuartValue.ToString("F1"), 2, height + ConvertSize(6) - height * 3 / 4, yPaint);
-            canvas.DrawText(maxValue.ToString("F1"), 2, ConvertSize(12), yPaint);
+            var borderOffset = leftBorder - ConvertSize(5);
+
+            canvas.DrawText(minValue.ToString("F1"), borderOffset, height, yPaint);
+            canvas.DrawText(quartValue.ToString("F1"), borderOffset, height + ConvertSize(6) - height / 4, yPaint);
+            canvas.DrawText(mediumValue.ToString("F1"), borderOffset, height + ConvertSize(6) - height / 2, yPaint);
+            canvas.DrawText(threeQuartValue.ToString("F1"), borderOffset, height + ConvertSize(6) - height * 3 / 4, yPaint);
+            canvas.DrawText(maxValue.ToString("F1"), borderOffset, ConvertSize(12), yPaint);
 
             path.Reset();
             path.MoveTo(leftBorder - ConvertSize(3), height + ConvertSize(2) - height / 4);
