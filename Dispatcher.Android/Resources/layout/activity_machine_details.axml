@@ -61,7 +61,7 @@
             />
         </LinearLayout>
 
-		<OxyPlot.Xamarin.Android.PlotView
+		<Dispatcher.Android.HistoryGraphView
 			android:layout_marginTop="7dp"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"

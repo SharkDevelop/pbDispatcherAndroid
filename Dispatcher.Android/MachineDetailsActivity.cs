@@ -35,7 +35,7 @@ namespace Dispatcher.Android
         private RecyclerView.LayoutManager _layoutManager;
         private MachineStatesAdapter _adapter;
 
-        private PlotView _plotView;
+        private HistoryGraphView _plotView;
         private DateTimeAxis _dateAxis;
         
         protected override void OnCreate(Bundle savedInstanceState)
@@ -46,7 +46,7 @@ namespace Dispatcher.Android
 
             SetContentView(Resource.Layout.activity_machine_details);
 
-            _plotView = FindViewById<PlotView>(Resource.Id.plotHistory);
+            _plotView = FindViewById<HistoryGraphView>(Resource.Id.plotHistory);
                         
             FindViewById<TextView>(Resource.Id.tvService)
                 .Click += (sender, args) => StartServiceRequestActivity();
@@ -70,8 +70,8 @@ namespace Dispatcher.Android
 
             _sensorHistoryTimeStart = DateTime.Now.AddDays(-1);
             _sensorHistoryTimeEnd = DateTime.Now;
-            
-            InitHistoryPlot();
+
+            _plotView.SetData(_sensorHistoryList, _sensorHistoryTimeStart, _sensorHistoryTimeEnd);
             
             if (_machine.sensors.Count != 0)
                 DataManager.SheduleGetSensorHistoryDataRequest(
@@ -127,45 +127,45 @@ namespace Dispatcher.Android
             _adapter.ItemClicked += ShowSateDetails;
         }
 
-        private void InitHistoryPlot()
-        {
-            _plotView.Model = CreatePlotModel(_sensorHistoryTimeStart, _sensorHistoryTimeEnd);
+        //private void InitHistoryPlot()
+        //{
+        //    _plotView.Model = CreatePlotModel(_sensorHistoryTimeStart, _sensorHistoryTimeEnd);
 
-            PlotModel CreatePlotModel(DateTime startDate, DateTime endDate)
-            {
-                var plotModel = new PlotModel
-                {
-                    Padding = new OxyThickness(0),
-                    PlotAreaBorderColor = OxyColors.Transparent,                    
-                };
+        //    PlotModel CreatePlotModel(DateTime startDate, DateTime endDate)
+        //    {
+        //        var plotModel = new PlotModel
+        //        {
+        //            Padding = new OxyThickness(0),
+        //            PlotAreaBorderColor = OxyColors.Transparent,                    
+        //        };
                 
-                var minValue = DateTimeAxis.ToDouble(startDate);
-                var maxValue = DateTimeAxis.ToDouble(endDate);                
+        //        var minValue = DateTimeAxis.ToDouble(startDate);
+        //        var maxValue = DateTimeAxis.ToDouble(endDate);                
 
-                plotModel.Axes.Add(new LinearAxis
-                {
-                    Position = AxisPosition.Left,
-                    AxislineStyle = LineStyle.Solid,
-                    AxislineColor = OxyColors.Black,
-                    AxisDistance = 1,
-                    IsPanEnabled = false                    
-                });               
+        //        plotModel.Axes.Add(new LinearAxis
+        //        {
+        //            Position = AxisPosition.Left,
+        //            AxislineStyle = LineStyle.Solid,
+        //            AxislineColor = OxyColors.Black,
+        //            AxisDistance = 1,
+        //            IsPanEnabled = false                    
+        //        });               
 
-                _dateAxis = new DateTimeAxis
-                {
-                    Position = AxisPosition.Bottom,
-                    AxislineStyle = LineStyle.Solid,
-                    AxislineColor = OxyColors.Black,
-                    Minimum = minValue,
-                    Maximum = maxValue,
-                    StringFormat="HH:mm dd.MM.yy"
-                };
+        //        _dateAxis = new DateTimeAxis
+        //        {
+        //            Position = AxisPosition.Bottom,
+        //            AxislineStyle = LineStyle.Solid,
+        //            AxislineColor = OxyColors.Black,
+        //            Minimum = minValue,
+        //            Maximum = maxValue,
+        //            StringFormat="HH:mm dd.MM.yy"
+        //        };
 
-                plotModel.Axes.Add(_dateAxis);
+        //        plotModel.Axes.Add(_dateAxis);
                 
-                return plotModel;
-            }
-        }
+        //        return plotModel;
+        //    }
+        //}
 
         private readonly object _locker = new object();
         
@@ -212,32 +212,30 @@ namespace Dispatcher.Android
                 UpdateTitle(Resource.String.no_authorization);
             else
                 UpdateTitle(Resource.String.no_connection);
-            
-            if (_sensorHistoryTimeStart != DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum) || 
-                _sensorHistoryTimeEnd != DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum))
+
+            if ((_plotView.readyToDataUpdate == true) && 
+                ((_sensorHistoryTimeStart != _plotView.timeStart) || 
+                (_sensorHistoryTimeEnd != _plotView.timeEnd)))
             {
-                _sensorHistoryTimeStart = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum);
-                _sensorHistoryTimeEnd = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum);
+                _plotView.readyToDataUpdate = false;
 
-                var offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalHours;
-
-                var start = DateTimeAxis.ToDateTime(_dateAxis.ActualMinimum).AddHours(-offset);
-                var end = DateTimeAxis.ToDateTime(_dateAxis.ActualMaximum).AddHours(-offset);                
+                _sensorHistoryTimeStart = _plotView.timeStart;
+                _sensorHistoryTimeEnd = _plotView.timeEnd;
 
                 if (_machine.sensors.Count != 0)
                     DataManager.SheduleGetSensorHistoryDataRequest(
                         _machine.sensors[0], 
                         (byte)SensorValueArrayIndexes.MainValue, 
-                        start, 
-                        end, 
+                        _sensorHistoryTimeStart, 
+                        _sensorHistoryTimeEnd, 
                         Settings.sensorHistoryPointsCount, 
                         DataUpdateCallback);
             }
 
-            if (_needHistoryGraphRedraw)
+            if (_needHistoryGraphRedraw == true)
             {
                 _needHistoryGraphRedraw = false;
-                RunOnUiThread(UpdatePlot);
+                _plotView.PostInvalidate();
             }
 
             if (_needDataUpdate > 0)
@@ -258,33 +256,34 @@ namespace Dispatcher.Android
             }
         }
 
-        private void UpdatePlot()
-        {
-            _plotView.Model.Series.Clear();
+        //private void UpdatePlot()
+        //{
+        //    _plotView.Model.Series.Clear();
             
-            var series = new LineSeries
-            {
-                MarkerType = MarkerType.None,
-                MarkerSize = 1,
-                Color = OxyColor.Parse("#a7a7a7")
-            };
+        //    var series = new LineSeries
+        //    {
+        //        MarkerType = MarkerType.None,
+        //        MarkerSize = 1,
+        //        Color = OxyColor.Parse("#a7a7a7")
+        //    };
 
-            lock (_locker)
-            {
-                foreach (var point in _sensorHistoryList)
-                {
-                    series.Points
-                        .Add(new DataPoint(DateTimeAxis.ToDouble(point.time), point.value));
-                }
-            }
+        //    lock (_locker)
+        //    {
+        //        foreach (var point in _sensorHistoryList)
+        //        {
+        //            series.Points
+        //                .Add(new DataPoint(DateTimeAxis.ToDouble(point.time), point.value));
+        //        }
+        //    }
 
-            _plotView.Model.Series.Add(series);
-            _plotView.InvalidatePlot();
-        }
+        //    _plotView.Model.Series.Add(series);
+        //    _plotView.InvalidatePlot();
+        //}
 
         private void UpdateViewValues()
         {
             RunOnUiThread(FillList);
+            _plotView.PostInvalidate();
         }
         
         private void FillList()

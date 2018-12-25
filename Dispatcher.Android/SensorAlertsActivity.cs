@@ -90,6 +90,7 @@ namespace Dispatcher.Android
         protected override void InitDataUpdating()
         {
             DataManager.SheduleGetSensorBordersRequest(_sensor, DataUpdateCallback);
+            UpdateViewValues();
         }
         
         private void InitCurrentMachine()

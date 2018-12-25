@@ -73,6 +73,7 @@
     <Compile Include="FilterListAdapter.cs" />
     <Compile Include="Helpers\DialogHelper.cs" />
     <Compile Include="Helpers\ResourcesHelper.cs" />
+    <Compile Include="HistoryGraphView.cs" />
     <Compile Include="MachineDetailsActivity.cs" />
     <Compile Include="MachinesAdapter.cs" />
     <Compile Include="MachineStatesAdapter.cs" />
