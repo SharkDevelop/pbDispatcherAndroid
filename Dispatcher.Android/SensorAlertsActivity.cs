@@ -174,6 +174,8 @@ namespace Dispatcher.Android
             numberFormatInfo.NumberGroupSeparator = " ";
             numberFormatInfo.NumberDecimalSeparator = ",";
 
+            if (_sensorBorder.minValue == 0 && _sensorBorder.maxValue == 0 && _sensorBorders.maxSecondsNotOkValue == 0) return;
+
             _etToleranceFromValue.Text = _sensorBorder.minValue.ToString("N", numberFormatInfo);
             _etToValue.Text = _sensorBorder.maxValue.ToString("N", numberFormatInfo);
 

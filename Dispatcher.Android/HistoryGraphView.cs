@@ -87,13 +87,8 @@ namespace Dispatcher.Android
                     break;
                 case MotionEventActions.Move:
                     if (!_scaleDetector.IsInProgress)
-                        currentTouchX = e.GetX();
-                    else
-                        currentTouchX = 0;
-                    break;
-                case MotionEventActions.Up:
-                    if (currentTouchX != 0)
                     {
+                        currentTouchX = e.GetX();
                         double relativeX = (currentTouchX - lastTouchX) / Width;
                         double frame = (timeEnd - timeStart).TotalSeconds;
                         timeStart = initialPanTimeStart.AddSeconds(-frame * relativeX);
@@ -104,8 +99,11 @@ namespace Dispatcher.Android
                         double oldFrame = (initialPinchTimeEnd - initialPinchTimeStart).TotalSeconds;
                         double newFrame = oldFrame / _scaleListener.Scale;
                         timeStart = initialPinchTimeStart.AddSeconds((oldFrame - newFrame) * relativePos);
-                        timeEnd = timeStart.AddSeconds(newFrame);
-                    }                    
+                        timeEnd = timeStart.AddSeconds(newFrame);                        
+                    }
+                    PostInvalidate();
+                    break;
+                case MotionEventActions.Up:                                        
                     readyToDataUpdate = true;
                     PostInvalidate();
                     break;
@@ -134,7 +132,7 @@ namespace Dispatcher.Android
         {
             base.OnDraw(canvas);
 
-            var paint = new Paint
+            var paint = new Paint(PaintFlags.AntiAlias)
             {
                 Color = Color.Black,
                 StrokeWidth = ConvertSize(1)                
@@ -173,7 +171,7 @@ namespace Dispatcher.Android
 
             if (historyList == null || !historyList.Any()) return;
 
-            var graphPaint = new Paint
+            var graphPaint = new Paint(PaintFlags.AntiAlias)
             {
                 Color = Color.Gray,
                 StrokeWidth = ConvertSize(2)
