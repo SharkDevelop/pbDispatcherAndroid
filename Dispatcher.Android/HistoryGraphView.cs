@@ -172,7 +172,7 @@ namespace Dispatcher.Android
 
             var graphPaint = new Paint(PaintFlags.AntiAlias)
             {
-                Color = Color.Gray,
+                Color = Color.ParseColor("#a7a7a7"),
                 StrokeWidth = ConvertSize(2)
             };
 
