@@ -13,10 +13,10 @@ namespace Dispatcher.Android
             switch (newState)
             {
                 case RecyclerView.ScrollStateDragging:
+                case RecyclerView.ScrollStateSettling:
                     IsScrolling = true;
                     break;
-                case RecyclerView.ScrollStateIdle:
-                case RecyclerView.ScrollStateSettling:
+                case RecyclerView.ScrollStateIdle:                
                     IsScrolling = false;
                     break;
             }
