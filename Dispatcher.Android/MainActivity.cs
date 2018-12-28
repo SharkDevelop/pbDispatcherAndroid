@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Android.App;
 using Android.Content;
@@ -11,6 +12,7 @@ using Android.Views;
 using Android.Widget;
 using DataUtils;
 using Dispatcher.Android.Appl;
+using Dispatcher.Android.Extensions;
 using Dispatcher.Android.Helpers;
 using Dispatcher.Android.Utils;
 
@@ -120,7 +122,7 @@ namespace Dispatcher.Android
             if (_needDataUpdate > 0)
             {
                 _needDataUpdate--;
-                
+
                 UpdateViewValues();
                 RunOnUiThread(() => _pingIndicator.Visibility = ViewStates.Visible);
             }
@@ -152,7 +154,7 @@ namespace Dispatcher.Android
 
         private void UpdateViewValues()
         {
-             RunOnUiThread(FillList);
+            RunOnUiThread(FillList);
         }
 
         private void DataUpdateCallback(object requestState)
@@ -185,21 +187,58 @@ namespace Dispatcher.Android
             intent.SetFlags(ActivityFlags.ReorderToFront);
             StartActivity(intent);
         }
-
+       
         private void FillList()
         {
             if (_scrollListener.IsScrolling) return;
 
             try
             {
-                _machines.Clear();
-                _adapter.NotifyDataSetChanged();
-            
                 var machines = DataManager.machines;
                 if (machines.Count <= 0) return;
             
-                _machines.AddRange(DataManager.machines);
-                _adapter.NotifyDataSetChanged();
+                if (!_machines.Any())
+                {
+                    _machines.AddRange(DataManager.machines);
+                    _adapter.NotifyDataSetChanged();
+                }
+                else
+                {
+                    for(int i = 0; i < DataManager.machines.Count; i++)
+                    {
+                        var machine = DataManager.machines[i];
+                        var exMachine = _machines.FirstOrDefault(m => m.ID == machine.ID);
+                        if (exMachine == null)
+                        {
+                            if (_machines.Count > i)
+                            {
+                                _machines.Insert(i, machine);
+                                _adapter.NotifyItemInserted(i);
+                            }                                
+                            else
+                            {
+                                _machines.Add(machine);
+                                _adapter.NotifyItemInserted(_machines.Count-1);
+                            }
+                        }
+                        else if (!machine.IsSame(exMachine))
+                        {
+                            var index = _machines.IndexOf(exMachine);
+                            _machines[index] = machine;
+                            _adapter.NotifyItemChanged(index);
+                        }
+                    }
+                    
+                    for (int i = _machines.Count - 1; i >= 0; i--)
+                    {
+                        var machine = _machines[i];
+                        bool delete = !DataManager.machines.Any(m => m.ID == machine.ID);
+                        if (!delete) continue;
+
+                        _machines.RemoveAt(i);
+                        _adapter.NotifyItemRemoved(i);
+                    }
+                }
             }
             catch (Exception e)
             {

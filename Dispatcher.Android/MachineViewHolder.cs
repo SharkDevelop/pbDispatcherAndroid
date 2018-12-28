@@ -10,42 +10,18 @@ namespace Dispatcher.Android
     {
         public ImageView MachineIcon { get; private set; }
 
-        public ImageView MachineStateIcon { get; set; }
+        public ImageView MachineStateIcon { get; private set; }
 
-        public ImageView SensorIconCell { get; set; }     
+        public ImageView SensorIconCell { get; private set; }     
 
         public TextView Title { get; private set; }
         public TextView Description { get; private set; }
 
-        public TextView MainValueCell { get; set; }
-        public TextView MainValueSymbolCell { get; set; }
+        public TextView MainValueCell { get; private set; }
+        public TextView MainValueSymbolCell { get; private set; }
 
-        public TextView AdditionalValueCell { get; set; }
-        public TextView AdditionalValueSymbolCell { get; set; }
-
-        public string MainValue
-        {
-            get { return MainValueCell.Text; }
-            set { MainValueCell.Text = value; }
-        }
-
-        public string MainValueSymbol
-        {
-            get { return MainValueSymbolCell.Text; }
-            set { MainValueSymbolCell.Text = value; }
-        }
-
-        public string AdditionalValue
-        {
-            get { return AdditionalValueCell.Text; }
-            set { AdditionalValueCell.Text = value; }
-        }
-
-        public string AdditionalValueSymbol
-        {
-            get { return AdditionalValueSymbolCell.Text; }
-            set { AdditionalValueSymbolCell.Text = value; }
-        }        
+        public TextView AdditionalValueCell { get; private set; }
+        public TextView AdditionalValueSymbolCell { get; private set; }       
 
         public MachineViewHolder(View itemView, Action<int> listener) : base(itemView)
         {

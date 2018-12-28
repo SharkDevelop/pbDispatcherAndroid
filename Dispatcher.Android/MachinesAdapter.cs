@@ -51,23 +51,23 @@ namespace Dispatcher.Android
                     var sensor = item.sensors[0];
 
                     cell.SensorIconCell.SetImageBitmap(ResourcesHelper.GetImageFromResources(sensor.type.iconName));
-                    cell.MainValue = sensor.mainValue.ToString("F2");
-                    cell.MainValueSymbol = sensor.type.mainValueSymbol;
+                    cell.MainValueCell.Text = sensor.mainValue.ToString("F2");
+                    cell.MainValueSymbolCell.Text = sensor.type.mainValueSymbol;
 
                     var numberFormatInfo = new CultureInfo("en-Us", false).NumberFormat;
                     numberFormatInfo.NumberGroupSeparator = " ";
                     numberFormatInfo.NumberDecimalSeparator = ",";
 
-                    cell.AdditionalValue = sensor.additionalValue.ToString("N", numberFormatInfo);
-                    cell.AdditionalValueSymbol = sensor.type.additionalValueSymbol;
+                    cell.AdditionalValueCell.Text = sensor.additionalValue.ToString("N", numberFormatInfo);
+                    cell.AdditionalValueSymbolCell.Text = sensor.type.additionalValueSymbol;
                 }
                 else
                 {
                     cell.SensorIconCell.SetImageBitmap(null);
-                    cell.MainValue = "";
-                    cell.MainValueSymbol = "";
-                    cell.AdditionalValue = "";
-                    cell.AdditionalValueSymbol = "";
+                    cell.MainValueCell.Text = "";
+                    cell.MainValueSymbolCell.Text = "";
+                    cell.AdditionalValueCell.Text = "";
+                    cell.AdditionalValueSymbolCell.Text = "";
                 }
 
                 cell.SetColor(Color.Black);
