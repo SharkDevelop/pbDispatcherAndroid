@@ -203,8 +203,8 @@ namespace Dispatcher.Android
         
         private async void Save()
         {
-            var from = _etToleranceFromValue.Text?.Replace(" ", "");
-            var to = _etToValue.Text?.Replace(" ", "");
+            var from = _etToleranceFromValue.Text?.Replace(" ", "").Replace(".", ",");
+            var to = _etToValue.Text?.Replace(" ", "").Replace(".", ",");
 
             if (double.TryParse(from, out var min))
                 _sensorBorder.minValue = min;
