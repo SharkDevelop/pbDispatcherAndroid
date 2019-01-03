@@ -23,7 +23,7 @@ namespace Dispatcher.Android
     {
         private const float UpdateInterval = 100f;
         private TimerHolder _timerHolder;
-        
+
         private byte _needDataUpdate;
         private DateTime _lastUpdateTime = DateTime.MinValue;
         
@@ -83,7 +83,7 @@ namespace Dispatcher.Android
 
                 DataManager.SheduleGetMachinesRequest(DataUpdateCallback);
                 _lastUpdateTime = DateTime.Now;
-            }                
+            }
 
             _timerHolder.Start();
         }        
@@ -91,13 +91,8 @@ namespace Dispatcher.Android
         protected override void OnStop()
         {
             base.OnStop();
-
-            _recyclerView.SetAdapter(null);
-            _adapter.ItemClicked -= StartSelectedMachineActivity;
-            _adapter.Dispose();
-            _adapter = null;
-
-            _timerHolder.Stop();
+            
+            _timerHolder.Stop();            
         }
 
         private void InitDataUpdating()
@@ -176,7 +171,7 @@ namespace Dispatcher.Android
         private void DataUpdateCallback(object requestState)
         {
             _needDataUpdate++;
-        }
+        }       
 
         private void StartSelectedMachineActivity(int position)
         {
@@ -187,11 +182,16 @@ namespace Dispatcher.Android
             AppSession.SelectedMachine = DataManager.machines[position];
             
             var intent = new Intent(this, typeof(MachineDetailsActivity));
-            StartActivity(intent);
+            StartActivity(intent);           
         }
 
         private void StartSettingsActivity()
         {
+            _recyclerView.SetAdapter(null);
+            _adapter.ItemClicked -= StartSelectedMachineActivity;
+            _adapter.Dispose();
+            _adapter = null;
+
             var intent = new Intent(this, typeof(SettingsActivity));
             StartActivity(intent);
         }

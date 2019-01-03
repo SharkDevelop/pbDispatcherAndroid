@@ -19,7 +19,7 @@ namespace Dispatcher.Android
 
         public MachinesAdapter(List<Machine> machines)
         {
-            _machines = machines;            
+            _machines = machines;
         }
 
         public void UpdateList(List<Machine> newList)
@@ -41,6 +41,14 @@ namespace Dispatcher.Android
             }
         }
 
+        public void ClearList()
+        {
+            var count = _machines.Count;
+            _machines.Clear();
+
+            NotifyDataSetChanged();
+        }
+
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
             var itemView = LayoutInflater.From(parent.Context)
@@ -48,18 +56,7 @@ namespace Dispatcher.Android
             
             var vh = new MachineViewHolder(itemView, OnClick);
             return vh;
-        }
-
-        public override void OnViewRecycled(Java.Lang.Object holder)
-        {
-            base.OnViewRecycled(holder);
-
-            if (holder is MachineViewHolder machineHolder)
-            {
-                machineHolder.Clear();               
-                machineHolder = null;
-            }
-        }
+        }              
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
@@ -68,8 +65,6 @@ namespace Dispatcher.Android
                 if (!(holder is MachineViewHolder cell) || 
                     _machines.Count <= position) return;
 
-                if (cell.IsEmpty()) return;
-            
                 var item = _machines[position];
 
                 cell.MachineIcon.SetImageBitmap(ResourcesHelper.GetImageFromResources(item.type.iconName));

@@ -8,9 +8,6 @@ namespace Dispatcher.Android
 {
     public class MachineViewHolder : RecyclerView.ViewHolder
     {
-        private Action<int> _listener;
-        private View _itemView;
-
         public ImageView MachineIcon { get; private set; }
 
         public ImageView MachineStateIcon { get; private set; }
@@ -39,11 +36,8 @@ namespace Dispatcher.Android
             AdditionalValueCell = itemView.FindViewById<TextView>(Resource.Id.addValueTextView);
             AdditionalValueSymbolCell = itemView.FindViewById<TextView>(Resource.Id.addValueSymbolTextView);
 
-            _listener = listener ?? throw new ArgumentNullException(nameof(listener));
-
-            _itemView = itemView;
-            _itemView.Click += ItemView_Click;
-        }        
+            itemView.Click += (senser, args) => listener(LayoutPosition);
+        }      
 
         public void SetColor(Color color)
         {
@@ -53,55 +47,6 @@ namespace Dispatcher.Android
             MainValueSymbolCell.SetTextColor(color);
             AdditionalValueCell.SetTextColor(color);
             AdditionalValueSymbolCell.SetTextColor(color);         
-        }
-
-        public bool IsEmpty()
-        {
-            return MachineIcon == null;
-        }
-
-        public void Clear()
-        {
-            MachineIcon?.Dispose();
-            MachineIcon = null;
-
-            MachineStateIcon?.Dispose();
-            MachineStateIcon = null;
-
-            SensorIconCell?.Dispose();
-            SensorIconCell = null;
-
-            Title?.Dispose();
-            Title = null;
-
-            Description?.Dispose();
-            Description = null;
-
-            MainValueCell?.Dispose();
-            MainValueCell = null;
-
-            MainValueSymbolCell?.Dispose();
-            MainValueSymbolCell = null;
-
-            AdditionalValueCell?.Dispose();
-            AdditionalValueCell = null;
-
-            AdditionalValueSymbolCell?.Dispose();
-            AdditionalValueSymbolCell = null;
-
-            if (_itemView != null)
-            {
-                _itemView.Click -= ItemView_Click;
-                _itemView.Dispose();
-                _itemView = null;
-            }
-
-            _listener = null;
-        }
-
-        private void ItemView_Click(object sender, EventArgs e)
-        {
-            _listener(LayoutPosition);
         }
     }
 }
