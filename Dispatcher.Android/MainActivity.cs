@@ -74,13 +74,29 @@ namespace Dispatcher.Android
                 return;
             }
 
+            if (_recyclerView.GetAdapter() == null)
+            {
+                _machines.Clear();
+                _adapter = new MachinesAdapter(_machines);
+                _recyclerView.SetAdapter(_adapter);
+                _adapter.ItemClicked += StartSelectedMachineActivity;
+
+                DataManager.SheduleGetMachinesRequest(DataUpdateCallback);
+                _lastUpdateTime = DateTime.Now;
+            }                
+
             _timerHolder.Start();
         }        
 
         protected override void OnStop()
         {
             base.OnStop();
-            
+
+            _recyclerView.SetAdapter(null);
+            _adapter.ItemClicked -= StartSelectedMachineActivity;
+            _adapter.Dispose();
+            _adapter = null;
+
             _timerHolder.Stop();
         }
 
@@ -126,12 +142,12 @@ namespace Dispatcher.Android
                 UpdateViewValues();
                 RunOnUiThread(() => _pingIndicator.Visibility = ViewStates.Visible);
             }
-            else if (DateTime.Now.Subtract(_lastUpdateTime).TotalMilliseconds > Settings.updatePeriodMs && 
-                     DataManager.machineTypes.Count != 0 && 
+            else if (DateTime.Now.Subtract(_lastUpdateTime).TotalMilliseconds > Settings.updatePeriodMs &&
+                     DataManager.machineTypes.Count != 0 &&
                      DataManager.NotAnsweredRequestsCount == 0)
             {
                 DataManager.SheduleGetMachinesRequest(DataUpdateCallback);
-                
+
                 _lastUpdateTime = DateTime.Now;
                 RunOnUiThread(() => _pingIndicator.Visibility = ViewStates.Invisible);
             }
@@ -190,55 +206,12 @@ namespace Dispatcher.Android
        
         private void FillList()
         {
-            if (_scrollListener.IsScrolling) return;
-
             try
             {
                 var machines = DataManager.machines;
                 if (machines.Count <= 0) return;
-            
-                if (!_machines.Any())
-                {
-                    _machines.AddRange(DataManager.machines);
-                    _adapter.NotifyDataSetChanged();
-                }
-                else
-                {
-                    for(int i = 0; i < DataManager.machines.Count; i++)
-                    {
-                        var machine = DataManager.machines[i];
-                        var exMachine = _machines.FirstOrDefault(m => m.ID == machine.ID);
-                        if (exMachine == null)
-                        {
-                            if (_machines.Count > i)
-                            {
-                                _machines.Insert(i, machine);
-                                _adapter.NotifyItemInserted(i);
-                            }                                
-                            else
-                            {
-                                _machines.Add(machine);
-                                _adapter.NotifyItemInserted(_machines.Count-1);
-                            }
-                        }
-                        else if (!machine.IsSame(exMachine))
-                        {
-                            var index = _machines.IndexOf(exMachine);
-                            _machines[index] = machine;
-                            _adapter.NotifyItemChanged(index);
-                        }
-                    }
-                    
-                    for (int i = _machines.Count - 1; i >= 0; i--)
-                    {
-                        var machine = _machines[i];
-                        bool delete = !DataManager.machines.Any(m => m.ID == machine.ID);
-                        if (!delete) continue;
 
-                        _machines.RemoveAt(i);
-                        _adapter.NotifyItemRemoved(i);
-                    }
-                }
+                _adapter.UpdateList(DataManager.machines.ToList());
             }
             catch (Exception e)
             {

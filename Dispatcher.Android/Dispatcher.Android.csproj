@@ -76,6 +76,7 @@
     <Compile Include="Helpers\ResourcesHelper.cs" />
     <Compile Include="HistoryGraphView.cs" />
     <Compile Include="MachineDetailsActivity.cs" />
+    <Compile Include="MachineDiffCallback.cs" />
     <Compile Include="MachinesAdapter.cs" />
     <Compile Include="MachineStatesAdapter.cs" />
     <Compile Include="MachineStateViewHolder.cs" />

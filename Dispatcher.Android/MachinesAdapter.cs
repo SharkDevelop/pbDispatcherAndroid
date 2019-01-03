@@ -1,22 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Android.Graphics;
+using Android.Support.V7.Util;
 using Android.Support.V7.Widget;
 using Android.Views;
 using DataUtils;
 using Dispatcher.Android.Helpers;
+using Java.Lang;
 
 namespace Dispatcher.Android
 {
     public class MachinesAdapter : RecyclerView.Adapter
     {
-        private readonly List<Machine> _machines;
+        private List<Machine> _machines;
         public event Action<int> ItemClicked;
 
         public MachinesAdapter(List<Machine> machines)
         {
             _machines = machines;            
+        }
+
+        public void UpdateList(List<Machine> newList)
+        {
+            if (!_machines.Any())
+            {
+                _machines.AddRange(newList);
+                NotifyDataSetChanged();
+            }
+            else
+            {
+                DiffUtil.DiffResult result = DiffUtil.CalculateDiff(new MachineDiffCallback(_machines, newList), true);
+
+                _machines.Clear();
+                _machines = null;
+                _machines = newList;
+
+                result.DispatchUpdatesTo(this);
+            }
         }
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
@@ -26,14 +48,27 @@ namespace Dispatcher.Android
             
             var vh = new MachineViewHolder(itemView, OnClick);
             return vh;
-        }       
-        
+        }
+
+        public override void OnViewRecycled(Java.Lang.Object holder)
+        {
+            base.OnViewRecycled(holder);
+
+            if (holder is MachineViewHolder machineHolder)
+            {
+                machineHolder.Clear();               
+                machineHolder = null;
+            }
+        }
+
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
             try
             {
                 if (!(holder is MachineViewHolder cell) || 
                     _machines.Count <= position) return;
+
+                if (cell.IsEmpty()) return;
             
                 var item = _machines[position];
 
@@ -83,7 +118,7 @@ namespace Dispatcher.Android
                         cell.SetColor(Color.Gray);
                 }
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 Console.WriteLine(e);
             }
